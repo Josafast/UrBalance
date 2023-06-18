@@ -1,18 +1,23 @@
 <?php
 
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::view('/', 'welcome')->name('index');
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/login', [LoginController::class, 'index'])->name('login.view');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+
+Route::get('/register', [LoginController::class, 'index'])->name('register.view');
+Route::post('/register', [LoginController::class, 'register'])->name('register');
+
+Route::middleware(['auth'])->group(function () {
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::prefix('/profile')->name('profile.')->group(function (){
+        Route::view('/', 'profile')->name('index');
+        Route::put('/{option}', [ProfileController::class, 'index'])->name('update');
+        Route::delete('/destroy', [ProfileController::class, 'destroy'])->name('destroy');
+    });
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
