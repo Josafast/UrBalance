@@ -7,7 +7,7 @@
     <ul>
       @auth
         <li><a href="{{ route('dashboard') }}" style="font-weight: {{ request()->routeIs('dashboard') ? 'bold' : 'normal' }}">Dashboard</a></li>
-        <li><a href="#">Transacciones</a></li>
+        <li><a href="{{ route('transactions.index') }}" style="font-weight: {{ request()->routeIs('transactions.index') ? 'bold' : 'normal' }}">Transacciones</a></li>
         <li><a href="{{ route('profile.index') }}" style="font-weight: {{ request()->routeIs('profile.index') ? 'bold' : 'normal' }}">Perfil</a></li>
         <li><form action="{{ route('logout') }}" method="post">
           @csrf

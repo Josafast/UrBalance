@@ -38,7 +38,7 @@
         <h4>Recuérdame</h4>
       </label>
     @endif
-    <input type="submit" value="{{ request()->routeIs('login.view') ? 'Ingresar' : 'Registrarse' }}" style="background-color: #fff; color: var(--red)">
+    <input type="submit" value="{{ request()->routeIs('login.view') ? 'Ingresar' : 'Siguiente' }}" style="background-color: #fff; color: var(--red)">
   </form>
 
   <script>
@@ -51,4 +51,5 @@
       iterator = iterator == 3 ? 0 : iterator+1; 
     }, 2000);
   </script>
+  @include('components.balance-create')
 </x-app-layout>    

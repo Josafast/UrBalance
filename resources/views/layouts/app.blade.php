@@ -12,7 +12,7 @@
 <body>
   <x-header/>
 
-  <main>
+  <main class="main">
     {{ $slot }}
   </main>
 

@@ -11,7 +11,12 @@ use Illuminate\Validation\ValidationException;
 class LoginController extends Controller
 {
     public function index(Request $request){
-        return !Auth::guest() ? redirect()->route('dashboard') : view('loginForm')->with('into', $request->route()->uri == 'register');
+        if (!Auth::guest()){
+            $request->session()->put('main','yes');
+            return redirect()->route('dashboard');
+        }
+
+        return view('loginForm')->with('into', $request->route()->uri == 'register');
         // return view('loginForm')->with('into', $request->route()->uri == 'register');
     }
 
@@ -31,10 +36,14 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
+        $request->session()->put('main','yes');
         return redirect()->route('dashboard');
     }
 
     public function register(Request $request){
+        $initial = $request->initial;
+        $exchange_id = $request->exchange_id;
+
         $user = $request->validate([
             'name' => 'required|min:3|max:50|string',
             'email' => 'required|email|string|unique:users',
@@ -42,8 +51,20 @@ class LoginController extends Controller
         ]);
 
         $user = User::create($user);
+
+        $balance = \App\Models\Balance::create([
+            'user_id' => $user->id,
+            'initial' => $initial,
+            'exchange_id' => intval($exchange_id),
+            'main' => true
+        ]);
+
+        $balanceFunc = app()->make('App\Http\Controllers\BalanceController');
+        $balanceFunc->store($balance);
+
         Auth::login($user);
 
+        $request->session()->put('main','yes');
         return redirect()->route('dashboard');
     }
 
