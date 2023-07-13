@@ -1,7 +1,7 @@
 <x-app-layout title="Transacciones">
   <section style="flex-direction: column">
     <h1 style="margin: 0 0 10px; font-weight: bold; font-size: 2.2em; color: #545454">Filtrado</h1>
-    <form action="{{ route('transactions.index') }}" method="get" class="transactions_form" style="margin: 0; font-size: .9em;">
+    <form action="{{ route('transactions.index') }}" method="get" class="form transactions_form" style="margin: 0; font-size: .9em;">
       <div style="position: relative; display: grid; grid-template-columns: repeat(2, min-content); grid-template-rows: repeat(2, 44.5px); grid-column-gap: 10px">
         <h2>Tipo:</h2>
         <label for="type" style="width: min-content">

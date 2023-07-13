@@ -18,6 +18,12 @@
   --pink: #ff2cb2;
 }
 
+.number::-webkit-inner-spin-button, 
+.number::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
 .horizontal {
   transform: scaleX(-1);
   -moz-transform: scaleX(-1);
@@ -29,6 +35,7 @@
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -46,7 +53,25 @@ body {
   min-height: 100vh;
   flex-flow: column wrap;
 
+  & button {
+    font-size: 1em;
+    transition: 2s;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+    font-weight: bold;
+    width: max-content;
+    height: min-content;
+    padding: 10px 40px;
+    border: none;
+    border-radius: 40px;
+    color: #333;
+    background-color: lightgray;
+  }
+
   & header {
+    background-color: #fff;
     display: flex;
     width: 100%;
     height: 60px;
@@ -68,12 +93,32 @@ body {
             font-size: 18px;
             color: #959595;
           }
+
+          &.create_transaction {
+            z-index: 100000000;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+
+            & a {
+              cursor: pointer;
+              padding: 10px 10px 15px 15px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background-color: #222;
+              color: #fff;
+              border-radius: 50%;
+              font-size: 2.5em;
+            }
+          }
         }
       }
     }
   }
 
   & main {
+    position: relative;
     padding: 30px;
     display: flex;
     flex-flow: column;
@@ -86,6 +131,29 @@ body {
       display: flex;
       justify-content: space-between;
       margin: 0 120px;
+
+      &.index {
+        flex-direction: column;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      &.presentation {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        &::before {
+          content:'';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.4);
+        }
+      }
 
       &.dashboard-values {
         & div {
@@ -130,15 +198,14 @@ body {
 
       &.transactions-table {
         & table {
-          margin: 50px 0;
+          margin: 50px 0 auto;
           display: grid;
           grid-template-rows: max-content 1fr;
           width: 100%;
-          height: 340px;
+          height: 100%;
           
           & tr {
             display: grid;
-            grid-template-columns: 1fr minmax(100px, 100px) 70px 150px 110px 110px 30px;
             gap: 0;
 
             & th, & td {
@@ -159,7 +226,8 @@ body {
             background-color: #444;
             height: min-content;
 
-            & tr th {
+            & tr {
+              grid-template-columns: 1fr minmax(100px, 100px) 70px 150px 110px 110px 75px !important;
               color: #fff;
               font-weight: bold;
             }
@@ -167,10 +235,23 @@ body {
 
           & tbody {
             background-color: #f5f5f5;
-            height: 100%;
+            height: 47vh;
             overflow-y: auto;
 
+            &::-webkit-scrollbar {
+              width: 15px;
+            }
+
+            &::-webkit-scrollbar-track {
+              background-color: rgba(0, 0, 0, 0.2);
+            }
+
+            &::-webkit-scrollbar-thumb {
+              background-color: #fff;
+            }
+
             & tr {
+              grid-template-columns: 1fr minmax(100px, 100px) 70px 150px 110px 110px 30px 30px;
               & td:first-child {
                 padding: 0;
                 & input {
@@ -206,7 +287,8 @@ body {
       }
     }
   
-    & form {
+    & form.form,
+    & div.form {
       color: #444;
       transition: 2s;
       width: max-content;
@@ -229,6 +311,29 @@ body {
         align-items: center;
         width: 30px;
         height: 30px;
+      }
+      
+      & ul {
+        & li {
+          cursor: pointer;
+          padding: 10px 0 10px 20px;
+          font-size: 1.6em;
+          position: relative;
+          border: none;
+          display: flex;
+          justify-content: start;
+          background-color: #fff;
+          width: 100%;
+          height: max-content;
+  
+          &:hover {
+            background-color: #ddd;
+          }
+
+          &.selected {
+            background-color: #ddd;
+          }
+        }
       }
 
       &.login_form {
@@ -285,7 +390,7 @@ body {
       & small {
         margin-bottom: 10px;
       }
-  
+
       & input, select {
         position: relative;
         background-color: transparent;
@@ -327,11 +432,113 @@ body {
       }
     }
 
+    & form.transaction_form {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(2, min-content) 1fr;
+      width: 100%;
+      flex-grow: 1;
+      position: relative;
 
+      & select {
+        position: relative;
+        background-color: transparent;
+        border: none;
+        transition: .3s;
+        outline: none;
+        font-size: 1.1em;
+        width: 240px;
+        padding: 10px 0;
+  
+        &:focus,
+        &:valid {
+          border-color: #444;
+        }
+      }
+
+      & div {
+        position: relative;
+        width: 100%;
+        height: min-content;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #333;
+        }
+      }
+
+      & div:last-child::after{
+        background-color: transparent;
+      }
+
+      & span {
+        transition: .3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 15px;
+        background-color: #333;
+        height: calc(100% - 15px); 
+        font-weight: bold;
+        border-radius: 15px;
+        font-size: 2em;
+        color: #fff;
+
+        & input {
+          width: 64px;
+          background-color: transparent;
+          font-size: 1em;
+          font-weight: bold;
+          color: #fff;
+          outline: none;
+          border: none;
+        }
+      }
+
+      & input[name="name"]{
+        font-weight: bold;
+        width: 100%;
+        font-size: 2em;
+        outline: none;
+        border: none;
+        padding-bottom: 20px;
+      }
+
+      & input[type="submit"]{
+        transition: .3s;
+        padding: 5px 0;
+        border: none;
+        outline: none;
+        background-color: #333;
+        color: #fff;
+        margin: 0;
+        font-size: 1.4em;
+        font-weight: bold;
+        width: 100%;
+        cursor: pointer;
+      }
+
+      & textarea {
+        font-weight: 350;
+        padding: 20px 0;
+        resize: none;
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        font-size: 1.1em;
+      }
+    }
   }
 
   & footer {
     display: flex;
+    gap: 70px;
     width: 100%;
     height: 70px;
     padding: 0 70px;
@@ -348,6 +555,46 @@ body {
   
       &:hover {
         filter: invert(70%);
+      }
+    }
+
+    & button{
+      color: #fff;
+      display: flex;
+      align-items: center;
+      width: max-content;
+      height: max-content;
+      padding: 5px;
+      background-color: #333;
+      border: none;
+      border-radius: 10px;
+
+      &:hover {
+        background-color: #000;
+
+        & img {
+          filter: invert(100%);
+        }
+      }
+
+      &:active {
+        background-color: #fff;
+
+        & img {
+          filter: invert(0%);
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1218px) {
+  body {
+    & main {
+      & div {
+        &.chart-container {
+          margin-top: 80px;
+        }
       }
     }
   }

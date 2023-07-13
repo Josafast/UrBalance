@@ -4,6 +4,7 @@ namespace App\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
+use App\Models\Balance;
 use Illuminate\View\Component;
 
 class TransactionsRows extends Component
@@ -14,12 +15,10 @@ class TransactionsRows extends Component
     public function __construct()
     {
         $this->queries = request()->query();
-        $balances = request()->user()->balance;
-        $balanceFunc = app()->make('App\Http\Controllers\BalanceController');
-        $balance = $balanceFunc->selectMainBalance($balances, request()->session()->get('main'));
+        $balance = Balance::where('exchange_id',request()->session()->get('main'))->where('user_id',request()->user()->id)->first();
         $this->sign = $balance->exchange->sign;
         $transactionsFunc = app()->make('App\Http\Controllers\TransactionController');
-        $transactions = $transactionsFunc->show($balance->transactions, request()->query());
+        $transactions = $transactionsFunc->show($balance->transactions->sortByDesc('created_at'), request()->query());
         $this->transactions = $transactions;
     }
 

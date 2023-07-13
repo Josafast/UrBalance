@@ -12,19 +12,22 @@ class ChartJS extends Component
 {
     public $type;
     public $labels;
-    public $sinceUntil;
-    public function __construct(string $type, array $sinceUntil)
+    public function __construct($transactions, string $type, array $sinceUntil)
     {
-        $sinceUntil = [
-            $sinceUntil[0] == null ? date_modify(new DateTime(), '-10 days') : new DateTime($sinceUntil[0]),
-            $sinceUntil[1] == null ? new DateTime() : new DateTime($sinceUntil[1])
-        ];
-        $this->sinceUntil = $sinceUntil; 
+        $searchINT = $type == 'entrance' ? 1 : ($type == 'spent' ? 2 : 3);
+        $queries = [
+            'type' => $searchINT,
+            'state' => 'true',
+            'base' => '',
+            'limit' => '',
+            'since' => $sinceUntil[0],
+            'until' => $sinceUntil[1]
+        ]; 
         $this->type = $type;
         $searchINT = $type == 'entrance' ? 1 : ($type == 'spent' ? 2 : 3);
 
-        $searchedBalance = app()->make('App\Http\Controllers\BalanceController');
-        $searchedBalance = $searchedBalance->show(request()->user()->balance, session('main') ,$searchINT, $sinceUntil);
+        $searchedTransactions = app()->make('App\Http\Controllers\TransactionController');
+        $searchedTransactions = $searchedTransactions->show($transactions, $queries);
 
         $categories = Category::all();
 
@@ -49,7 +52,7 @@ class ChartJS extends Component
             $labels['data']['color'][] = $category->color;
         }
 
-        foreach($searchedBalance as $transaction){
+        foreach($searchedTransactions as $transaction){
             for($i=0; $i<count($labels['name']); $i++){
                 if ($labels['name'][$i] == $transaction->category->name){
                     $labels['data']['transactions'][$i] = floatval($labels['data']['transactions'][$i]) + floatval($transaction->quantity);
@@ -60,9 +63,6 @@ class ChartJS extends Component
         $this->labels = response()->json($labels);
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('components.chartjs');

@@ -29,12 +29,15 @@
       const rootStyles = getComputedStyle(document.documentElement);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" stye="display:none;"></script>
-    <x-chart-js :type="'spent'" :sinceUntil="$sinceUntil"/>
-    <x-chart-js :type="'entrance'" :sinceUntil="$sinceUntil"/>
-    <x-chart-js :type="'saving'" :sinceUntil="$sinceUntil"/>
+    @php
+      $transactions = App\Models\Balance::where('exchange_id',request()->session()->get('main'))->where('user_id',request()->user()->id)->first()->transactions;
+    @endphp
+    <x-chart-js :transactions="$transactions" :type="'spent'" :sinceUntil="$sinceUntil"/>
+    <x-chart-js :transactions="$transactions" :type="'entrance'" :sinceUntil="$sinceUntil"/>
+    <x-chart-js :transactions="$transactions" :type="'saving'" :sinceUntil="$sinceUntil"/>
   </section>
   <section class="dashboard-select-date">
-    <form action="{{ route('dashboard') }}" method="get" id="sinceUntil" class="date_form">
+    <form action="{{ route('dashboard') }}" method="get" id="sinceUntil" class="form date_form">
       <label for="since">
         <h2>Desde: </h2>
         <input type="date" name="since" id="dateSINCE">

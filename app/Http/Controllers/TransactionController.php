@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Balance;
 use DateTime;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
@@ -15,12 +18,9 @@ class TransactionController extends Controller
         return view('transactions');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('transactions-create');
     }
 
     /**
@@ -28,12 +28,20 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $balanceDestiny = $request->user()->balance->where('exchange_id', $request->session()->get('main'))->first();
+        $balanceDestinyID = $balanceDestiny->id;
 
-    /**
-     * Display the specified resource.
-     */
+        $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id']);
+        $transaction = Transaction::create($data);
+
+        DB::table('balance_transaction')->insert([
+            'balance_id' => $balanceDestinyID,
+            'transaction_id' => $transaction->id
+        ]);
+
+        return redirect()->route('dashboard');
+    }
+    
     public function show($transactions, $queries)
     {
         if (count($queries) >= 1){
@@ -74,27 +82,46 @@ class TransactionController extends Controller
         return $transactions;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+    protected function find(int $id){
+        $balances = request()->user()->balance;
+        $balanceID = $balances->where('exchange_id', request()->session()->get('main'))->first()->id; 
+        $transaction = Transaction::whereHas('balance', function($query) use ($balanceID){
+            $query->where('id', $balanceID);
+        })->where('id', $id)->first();
+
+        return $transaction;
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function edit(int $id)
     {
-        //
+        $transaction = $this->find($id);
+
+        if ($transaction){
+            return view('transactions-create', compact('transaction'));
+        } 
+
+        return redirect(request()->session()->get('_previous')['url']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function update(Request $request)
     {
-        //
+        $transaction = $this->find($request->transaction);
+        if ($transaction){
+            $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id']);
+            $transaction->update($data);
+            return redirect()->route('transactions.index');
+        } 
+
+        return redirect(request()->session()->get('_previous')['url']);
+    }
+
+    public function destroy(int $id)
+    {
+        $transaction = $this->find($id);
+        if ($transaction){
+            $transaction->delete();
+        } 
+
+        return redirect()->route('transactions.index');
     }
 }

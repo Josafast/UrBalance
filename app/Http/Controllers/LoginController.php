@@ -36,35 +36,30 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
-        $request->session()->put('main','yes');
+        $request->session()->put(
+            'main',
+            \App\Models\Balance::where('user_id',$request->user()->id)->where('main',"=",true)->first()->exchange_id
+        );
         return redirect()->route('dashboard');
     }
 
     public function register(Request $request){
-        $initial = $request->initial;
-        $exchange_id = $request->exchange_id;
-
         $user = $request->validate([
             'name' => 'required|min:3|max:50|string',
             'email' => 'required|email|string|unique:users',
-            'password' => ['required','confirmed', 'min:6', 'max:20', Password::defaults()]
+            'password' => ['required','confirmed', Password::defaults()]
         ]);
 
         $user = User::create($user);
 
-        $balance = \App\Models\Balance::create([
-            'user_id' => $user->id,
-            'initial' => $initial,
-            'exchange_id' => intval($exchange_id),
-            'main' => true
-        ]);
+        $request->merge(['userID' => $user->id]);
 
-        $balanceFunc = app()->make('App\Http\Controllers\BalanceController');
-        $balanceFunc->store($balance);
+        $balanceCreateFunc = app()->make('App\Http\Controllers\BalanceController');
+        $balanceCreateFunc->create($request);
 
         Auth::login($user);
 
-        $request->session()->put('main','yes');
+        $request->session()->put('main',$request->exchange_id);
         return redirect()->route('dashboard');
     }
 

@@ -1,5 +1,5 @@
 <x-app-layout title="Perfil">
-  <form action="{{ route('profile.update', 'change_email') }}" method="post" style="width: 50%;">
+  <form action="{{ route('profile.update', 'change_email') }}" method="post" style="width: 50%;" class="form">
     @csrf
     @method('put')
     <h2 style="margin-bottom: 20px;">Cambiar nombre o correo electrónico</h2>
@@ -20,7 +20,7 @@
     @enderror
     <input type="submit" value="Cambiar">
   </form>
-  <form action="{{ route('profile.update', 'change_password') }}" method="post" style="width: 50%;">
+  <form action="{{ route('profile.update', 'change_password') }}" method="post" style="width: 50%;" class="form">
     @csrf
     @method('put')
     <h2 style="margin-bottom: 20px;">Cambiar Contraseña</h2>
@@ -45,7 +45,7 @@
     </label>
     <input type="submit" value="Cambiar">
   </form>
-  <form action="{{ route('profile.destroy') }}" method="post" style="width: 50%;">
+  <form action="{{ route('profile.destroy') }}" method="post" style="width: 50%;" class="form">
     @csrf
     @method('delete')
     <h2>Borrar usuario</h2>

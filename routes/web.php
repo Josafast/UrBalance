@@ -24,6 +24,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{option}', [ProfileController::class, 'index'])->name('update');
         Route::delete('/destroy', [ProfileController::class, 'destroy'])->name('destroy');
     });
+    ROute::prefix('/balance')->name('balance.')->group(function (){
+        Route::post('/change-main', [BalanceController::class, 'update'])->name('change-main');
+        Route::post('/create', [BalanceController::class, 'create'])->name('create');
+        Route::post('/delete', [BalanceController::class, 'destroy'])->name('delete');
+    });
     Route::resource('/transactions', App\Http\Controllers\TransactionController::class);
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });

@@ -9,7 +9,7 @@ class Balance extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['initial', 'user_id', 'exchange_id'];
+    protected $fillable = ['balance', 'initial', 'user_id', 'exchange_id', 'main'];
 
     public function user(){
         return $this->belongsTo(User::class);

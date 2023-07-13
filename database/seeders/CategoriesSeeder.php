@@ -17,7 +17,8 @@ class CategoriesSeeder extends Seeder
             [
                 'Interest' => 'blue',
                 'Gift' => 'pink',
-                'Salary' => 'green'
+                'Salary' => 'green',
+                'Other' => 'purple'
             ],
             [
                 'Transport' => 'strong-blue',

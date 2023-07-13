@@ -1,5 +1,5 @@
 <x-app-layout title="{{request()->routeIs('login.view') ? 'Ingresar' : 'Registrarse'}}">
-  <form action="{{ route( request()->routeIs('login.view') ? 'login' : 'register' ) }}" method="post" class="login_form" style="color: #fff; background-color: var(--red); margin: auto;width: 400px;">
+  <form action="{{ route( request()->routeIs('login.view') ? 'login' : 'register' ) }}" method="post" class="form login_form" style="color: #fff; background-color: var(--red); margin: auto;width: 400px;">
     @csrf
     @if ($into)
       <label for="name">
@@ -51,5 +51,4 @@
       iterator = iterator == 3 ? 0 : iterator+1; 
     }, 2000);
   </script>
-  @include('components.balance-create')
 </x-app-layout>    

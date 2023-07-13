@@ -4,29 +4,18 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Balance;
-use App\Models\Type;
-use DateTime;
 use Illuminate\Http\Request;
 
 class BalanceController extends Controller
 {
-    public function selectMainBalance($balances, $main){
-        $mains = "";
-        $option = "";
-        if ($main == 'yes'){
-            $mains = array_column(json_decode($balances), 'main');
-            $option = array_search('true', $mains);
-        } else {
-            $mains = array_column(json_decode($balances), 'exchange_id');
-            $option = array_search($main, $mains);
-        }
-
-        return $balances[$option];
-    }
-
-    public function index($balance, $main)
+    public function index($main)
     {
-        $balance = $this->selectMainBalance($balance, $main);
+        
+        $balance = $main == 'yes'
+        ? Balance::where('main', true)->where('user_id', request()->user()->id)->first()
+        : Balance::where('exchange_id',$main)->where('user_id',request()->user()->id)->first();
+
+        request()->session()->put('main', $balance->exchange_id);
 
         $sign = $balance->exchange->sign;
 
@@ -34,10 +23,12 @@ class BalanceController extends Controller
         $toDo = array(floatval(0),floatval(0));
         foreach($notDone as $nd):
             if ($nd->category->type->id == 2):
-            $toDo[0] = $toDo[0] + floatval($nd->quantity);
-            else:
-            $toDo[1] = $toDo[1] + floatval($nd->quantity);
+                $toDo[0] = $toDo[0] + floatval($nd->quantity);
             endif;
+
+            if ($nd->category->type->id == 1){
+                $toDo[1] = $toDo[1] + floatval($nd->quantity);
+            }
         endforeach;
 
         $balance = array(
@@ -50,9 +41,27 @@ class BalanceController extends Controller
         return $balance;
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        
+        $queries = [
+            'userID' => $request->has('userID') ? $request->userID : $request->user()->id,
+            'initial' => floatval($request->initial),
+            'exchangeID' => intval($request->exchange_id),
+            'main' => $request->has('userID') ? true : false 
+        ];
+
+        \App\Models\Balance::create([
+            'user_id' => $queries['userID'],
+            'balance' => $queries['initial'],
+            'initial' => $queries['initial'],
+            'exchange_id' => $queries['exchangeID'],
+            'main' => $queries['main']
+        ]);
+
+        if (!$request->is('register.view')){
+            $request->session()->put('main',$request->exchange_id);
+            return redirect($request->session()->get('_previous')['url']); 
+        }
     }
 
     public function store($balance)
@@ -83,59 +92,7 @@ class BalanceController extends Controller
 
     public function show($balances, $main, int $type = null, array $sinceUntil = null)
     {
-        /*
-        $allCategories = Type::find($type)->categories;
-
-        $newCategories = $allCategories->reduce(function ($result, $category) {
-            $result[$category->name] = [$category->transactions, $category->color];
-            return $result;
-        }, []);
-
-        $newerCategories = [];
         
-        foreach ($newCategories as $category => $data) {
-            $newerCategories[$category] = [
-                'transactions' => [],
-                'color' => $data[1]
-            ];
-        
-            foreach ($data[0] as $transaction) {
-                if ($transaction->status){
-                    if ($transaction->balance[0]->main) {
-                        $newerCategories[$category]['transactions'][] = $transaction->quantity;
-                    }
-            
-                    if ($transaction->balance[0]->exchange_id == session('main')) {
-                        $newerCategories[$category]['transactions'][] = $transaction->quantity;
-                    }
-                }
-            }
-        }
-
-        return $newerCategories;
-        */
-
-        $balance = $this->selectMainBalance($balances, $main);
-
-        $transactions = $balance->transactions;
-
-        if ($type) {
-            $transactions = $transactions->filter(function ($transaction) use ($type) {
-                return $transaction->category->type_id == $type;
-            });
-        }
-
-        if ($sinceUntil){
-            $transactions = $transactions->filter(function ($transaction) use ($sinceUntil) {
-                return new DateTime($transaction->created_at) >= $sinceUntil[0] && new DateTime($transaction->created_at) <= $sinceUntil[1];
-            });
-        }
-
-        $transactions = $transactions->filter(function ($transaction){
-            return $transaction->status == 'true';
-        });
-
-        return $transactions;
     }
 
     public function edit(string $id)
@@ -143,13 +100,48 @@ class BalanceController extends Controller
         
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        
+        if ($request->boolean('change_main')){
+            $balances = $request->user()->balance;
+            $balances->map(function($balance) use ($request){
+                if ($balance->exchange_id ==  $request->session()->get('main')){
+                    $balance->main = false;
+                    $balance->save();
+                }
+
+                if ($balance->exchange_id == $request->main){
+                    $balance->main = true;
+                    $balance->save();
+                }
+            });
+        }
+
+        $request->session()->put('main', $request->main);
+
+        return redirect($request->session()->get('_previous')['url']);       
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        
+        $currentBalance = $request->user()->balance->where('exchange_id',$request->main)->first();
+        $mainOption = $request->session()->get('main');
+
+        if ($mainOption != $request->main OR !$currentBalance->main){
+            if ($mainOption == $request->main){
+                $realMainBalance = $request->user()->balance->where('main', true)->first();
+                $request->session()->put('main', $realMainBalance->exchange_id);
+            }
+
+            if ($currentBalance->main){
+                $newMainBalance = $request->user()->balance->where('exchange_id',$mainOption)->first();
+                $newMainBalance->main = true;
+                $newMainBalance->save();
+            }
+
+            $currentBalance->delete();
+        }
+
+        return redirect($request->session()->get('_previous')['url']);
     }
 }
