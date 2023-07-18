@@ -385,11 +385,7 @@ body {
           transition: .3s;
           position: absolute;
         }
-      }
-  
-      & small {
-        margin-bottom: 10px;
-      }
+      } 
 
       & input, select {
         position: relative;

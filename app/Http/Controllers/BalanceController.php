@@ -60,7 +60,7 @@ class BalanceController extends Controller
 
         if (!$request->is('register.view')){
             $request->session()->put('main',$request->exchange_id);
-            return redirect($request->session()->get('_previous')['url']); 
+            return response()->json(['link' => $request->session()->get('_previous')['url']], 200);
         }
     }
 
@@ -90,16 +90,6 @@ class BalanceController extends Controller
         $balance->save();
     }
 
-    public function show($balances, $main, int $type = null, array $sinceUntil = null)
-    {
-        
-    }
-
-    public function edit(string $id)
-    {
-        
-    }
-
     public function update(Request $request)
     {
         if ($request->boolean('change_main')){
@@ -119,7 +109,7 @@ class BalanceController extends Controller
 
         $request->session()->put('main', $request->main);
 
-        return redirect($request->session()->get('_previous')['url']);       
+        return response()->json(['link' => $request->session()->get('_previous')['url']], 200);       
     }
 
     public function destroy(Request $request)
@@ -142,6 +132,6 @@ class BalanceController extends Controller
             $currentBalance->delete();
         }
 
-        return redirect($request->session()->get('_previous')['url']);
+        return response()->json(['link' => $request->session()->get('_previous')['url']], 200);
     }
 }

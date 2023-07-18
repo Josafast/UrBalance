@@ -1,7 +1,4 @@
 <div class="float" id="menu_balance" style="display: none;">
-  <script>
-    let mainSubmiter = false;
-  </script>
   <form action="{{ route('balance.change-main') }}" method="post" id="balance-menu" class="form">
     @csrf
     <span class="close" id="closeFloatMenu">
@@ -19,9 +16,9 @@
         $balances = request()->user()->balance;
       @endphp
       @foreach ($balances as $position => $balance)
-        <li style="margin-top: -1.5px; border-radius: 
-        {{ $position == 0 ? '10px 10px 0 0;' : ($position == (count($balances)-1) ? '0 0 10px 10px;' : '')}}
-        @if ($balance->main)
+        <li style="margin-top: -1.5px; 
+        {{ $position == 0 ? 'border-radius: 10px 10px 0 0;' : ($position == (count($balances)-1) ? 'border-radius: 0 0 10px 10px;' : '')}}
+        @if ($balance->main == 1) 
           font-weight: 500;
         @endif"
         class="list-element
@@ -36,39 +33,17 @@
       @endforeach
     </ul>
     <div style="margin-top: 30px; display: flex; justify-content: space-between; gap: 20px;">
-      <button style="position: relative;" id="change_balance_button">Cambiar</button>
-      <button style="position: relative;" id="change_main_balance_button">Cambiar principal</button>
-      <button style="position: relative;" id="create_balance_button">Crear</button>
-      <button style="position: relative;" id="delete_balance_button">Eliminar</button>
+      <button style="position: relative;" id="change_balance_button" option="1">Cambiar</button>
+      <button style="position: relative;" id="change_main_balance_button" option="2">Cambiar principal</button>
+      @if (count($balances) < count(App\Models\Exchange::all()))
+        <button style="position: relative;" id="create_balance_button" option="3">Crear</button>
+      @endif
+      <button style="position: relative;" id="delete_balance_button" option="4">Eliminar</button>
     </div>
   </form>
   <script>
-      function submitForm(deleteBalance = false ,changeMain = false){
-        if (changeMain){
-          document.getElementById('change_main').value = "true";
-        }
-
-        if (deleteBalance){
-          document.getElementById('balance-menu').setAttribute('action', "{{ route('balance.delete') }}");  
-        }
-        
-        mainSubmiter = true;
-        document.getElementById('balance-menu').submit();
-      }
-
-      document.getElementById('change_balance_button').addEventListener('click',()=>submitForm());
-      document.getElementById('change_main_balance_button').addEventListener('click',()=>submitForm(false, true));
-      document.getElementById('create_balance_button').addEventListener('click',()=>document.getElementById('create_balance').removeAttribute('style'));
-      document.getElementById('delete_balance_button').addEventListener('click',()=>submitForm(true));
-
       document.getElementById('closeFloatMenu').addEventListener('click',(e)=>{
         e.target.parentElement.parentElement.style.display = "none";
-      });
-
-      document.getElementById('balance-menu').addEventListener('submit',(e)=>{
-        if (!mainSubmiter){
-          e.preventDefault();
-        }
       });
 
       let list = document.querySelectorAll('.list-element'); 

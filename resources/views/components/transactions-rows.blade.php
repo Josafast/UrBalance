@@ -7,9 +7,10 @@
         <td style="color: var(--{{ $transaction->status ? 'green' : 'red' }})">{{ $transaction->status ? 'Done' : 'Undone' }}</td>
         <td>{{ date_format(new Datetime($transaction->created_at), 'Y-m-d') }}</td>
         <td>
-            <a href="{{ route('transactions.edit', $transaction->id) }}" style="text-decoration: none;">
-                ✏️
-            </a>
+            <form action="{{ route('transactions.edit', $transaction->id) }}" method="get">
+                @csrf
+                <input type="submit" value="✏️" style="border: none; font-size: 1.1em; cursor: pointer;">
+            </form>
         </td>
         <td>
             <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST">

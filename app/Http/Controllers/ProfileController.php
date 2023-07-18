@@ -2,47 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    public function index(Request $request, string $option){
-        $this->$option($request);
-        return redirect()->route('profile.index');
-    }
-
-    protected function change_email(Request $request){
-        $credentials = $request->validate([
+    public function change_email(Request $request){
+        $credentials = Validator::make($request->only(['name', 'email']), [
             'name' => 'required|min:3|max:50|string',
-            'email' => ['required','email','string', $request->user()->email == $request->email ? '' : 'unique:users']
+            'email' => ['required','email', $request->user()->email == $request->email ? '' : 'unique:users']
+
         ]);
 
-        $request->user()->fill($credentials);
+        if ($credentials->fails()){
+            return response()->json($credentials->errors(), 422);
+        }
+
+        $request->user()->fill($request->only(['name', 'email']));
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
         $request->user()->save();
+
+        return response()->json(['link'=> route('profile.index')], 200);
     }
 
-    protected function change_password(Request $request){
-        $credentials = $request->validate([
+    public function change_password(Request $request){
+        $credentials = Validator::make($request->only(['current_password', 'new_password', 'new_password_confirmation']), [
             'current_password' => 'required|current_password',
             'new_password' => ['required', Password::defaults(), 'confirmed']
         ]);
 
+        if ($credentials->fails()){
+            return response()->json($credentials->errors(), 422);
+        }
+
         $request->user()->update([
-            'password' => $credentials['new_password']
+            'password' => $request->new_password
         ]);
+
         $request->user()->save();
+
+        return response()->json(['link'=> route('profile.index')], 200);
     }
 
     protected function destroy(Request $request){
-        $request->validate(['password'=>'required|confirmed|current_password']);
+        $credentials = Validator::make($request->only(['password', 'password_confirmation']),[ 
+            'password' => 'required|confirmed|current_password'
+        ]);
+
+        if ($credentials->fails()){
+            return response()->json($credentials->errors(), 422);
+        }
 
         $user = $request->user();
 
@@ -53,6 +68,6 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login.view');
+        return response()->json(['link'=> route('login.view')], 200);
     }
 }

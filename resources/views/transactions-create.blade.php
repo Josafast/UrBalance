@@ -4,14 +4,14 @@
     @method( isset($transaction) ? 'PUT' : 'POST')
     <div style="display: grid; grid-gap: 0; grid-template-columns: 1fr max-content; grid-template-rows: min-content; height: min-content;">
       <label for="name">
-        <input type="text" name="name" placeholder="Nueva Transacción" 
+        <input type="text" name="name" required placeholder="Nueva Transacción" 
         @if (isset($transaction))
           value="{{ $transaction->name }}"
         @endif>
       </label>
       <label for="quantity">
         <span class="transaction_span">
-          <input type="number" name="quantity" id="quantity-input" value="{{ isset($transaction) ? number_format($transaction->quantity, 2) : '0.00' }}" class="number">&nbsp;{{ App\Models\Exchange::where('id', request()->session()->get('main'))->first()->sign }}
+          <input type="number" step="0.01" min="0.01" name="quantity" id="quantity-input" value="{{ isset($transaction) ? number_format($transaction->quantity, 2) : '0.00' }}" class="number">&nbsp;{{ App\Models\Exchange::where('id', request()->session()->get('main'))->first()->sign }}
           <script>
             let quantityInput = document.getElementById('quantity-input');
             
@@ -45,7 +45,7 @@
           @endforeach
         </select>
       <label for="status" style="width: min-content;">
-        <select name="status" style="width: min-content">
+        <select name="status" required style="width: min-content">
           <option value="">Estado</option>
           <option value="true" 
           @if (isset($transaction))
@@ -62,7 +62,7 @@
         </select>
       </label>
       <label for="category_id" style="width: min-content;">
-        <select name="category_id" style="width: min-content" class="category-selector-main">
+        <select name="category_id" required style="width: min-content" class="category-selector-main">
           <option value="">Categoría</option>
           @foreach($types as $type)
             <optgroup label="{{ $type->name }}" class="category-selector">

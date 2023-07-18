@@ -6,7 +6,7 @@
         </span>
         <label for="initial" class="balance-label">
             <h4>Selecciona el valor inicial de tu cuenta:</h4>
-            <input type="number" name="initial" class="number">
+            <input type="number" required name="initial" class="number">
         </label>
         <label for="exchange_id" class="balance-label">
             <h4>Selecciona la tasa de cambio</h4>
@@ -21,30 +21,8 @@
         <input type="submit" value="{{ request()->routeIs('register.view') ? 'Registrarse' : 'Crear' }}" style="margin: 10px 0 0 auto; position: relative;">
     </form>
     <script>
-
         document.getElementById('closeFloatCreate').addEventListener('click',(e)=>{
             e.target.parentElement.parentElement.style.display = "none";
         });
-
-        @if (request()->routeIs('register.view'))
-            let submiter = false;
-
-            document.getElementById('balance-create').addEventListener('submit', (e)=>{
-                e.preventDefault();
-
-                document.querySelectorAll('.balance-label').forEach(label=>{
-                    document.querySelector('.login_form').appendChild(label);
-                });
-
-                document.querySelector('.login_form').submit();
-            });
-
-            document.querySelector('.login_form').addEventListener('submit', (e)=>{
-                if (!submiter){
-                    e.preventDefault();
-                    document.getElementById('balance-create').parentElement.removeAttribute('style');        
-                }
-            });
-        @endif
     </script>
 </div>

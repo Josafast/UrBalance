@@ -30,5 +30,8 @@
   <x-footer />
   <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
   <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+  @if (!request()->routeIs('index'))
+    @vite(['resources/js/forms.js'])
+  @endif
 </body>
 </html>
