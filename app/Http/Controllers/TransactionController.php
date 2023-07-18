@@ -32,6 +32,11 @@ class TransactionController extends Controller
         $balanceDestinyID = $balanceDestiny->id;
 
         $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id']);
+        
+        $data['quantity'] = floatval($data['quantity']);
+        $data['quantity'] *= 100;
+        $data['quantity'] = intval($data['quantity']);
+
         $transaction = Transaction::create($data);
 
         DB::table('balance_transaction')->insert([
@@ -72,7 +77,7 @@ class TransactionController extends Controller
             if ($queries['since'] != '' || $queries['until'] != ''){
                 $sinceUntil = [
                     $queries['since'] == null ? date_modify(new DateTime(), '-10 days') : new DateTime($queries['since']),
-                    $queries['until'] == null ? new DateTime() : new DateTime($queries['until'])
+                    $queries['until'] == null ? new DateTime() : date_modify(new DateTime($queries['until']), '+1 day')
                 ];
                 $transactions = $transactions->filter(function ($transaction) use ($sinceUntil) {
                     return new DateTime($transaction->created_at) >= $sinceUntil[0] && new DateTime($transaction->created_at) <= $sinceUntil[1];
@@ -108,6 +113,11 @@ class TransactionController extends Controller
         $transaction = $this->find($request->transaction);
         if ($transaction){
             $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id']);
+
+            $data['quantity'] = floatval($data['quantity']);
+            $data['quantity'] *= 100;
+            $data['quantity'] = intval($data['quantity']);
+
             $transaction->update($data);
             return redirect()->route('transactions.index');
         } 

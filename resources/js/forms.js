@@ -32,12 +32,21 @@ class FormSubmitter {
     }
     this.formData = params;
 
-    this.method = this.formData.has('_method') ? this.formData.get('_method') : 'POST';
+    this.method = this.formData.has('_method') ? this.formData.get('_method') : formulary.method;
+  
+    if (this.method.toUpperCase() == 'GET'){
+      let path = new URL(window.location.href);
+      let pathname = "";
+      for (let [labelName, labelValue] of this.formData.entries()){
+        pathname += labelName + "=" + labelValue + "&";
+      }
+      location.replace(path.href + "?" + pathname.slice(0, pathname.length-1));
+    }
   } 
 
   balanceMenuSelector(buttonValue){
     let path = new URL(window.location.href);
-    this.method = 'put'
+    this.method = 'put';
 
     if (buttonValue == "2"){
       this.formData.set('change_main', true);
@@ -79,20 +88,21 @@ class FormSubmitter {
   }
 
   submit(){
-      fetch(this.action, {
+      let options = {
         method: this.method,
         body: this.formData,
         headers: {
           'X-CSRF-TOKEN': this.formData.get('_token')
         }
-      })
+      };
+
+      fetch(this.action, options)
       .then(res=>{
         if (!res.ok){
           return res.json().then(error => { throw error; });
         }
-        return res.json();
-      }).then(data=>{
-        location.replace(data.link);
+
+        return res.json().then(data => location.replace(data.link));
       }).catch(err=>{
         for(let [errorField, errorMessages] of Object.entries(err)){
           document.querySelector(`.${errorField}Errors`).innerHTML = "";
@@ -103,7 +113,7 @@ class FormSubmitter {
           });
         }
       });
-    }
   }
+}
 
 let formSubmitter = new FormSubmitter();

@@ -24,14 +24,14 @@ class DatabaseSeeder extends Seeder
         $balance_one = \App\Models\Balance::create([
             'user_id' => 1,
             'exchange_id' => 1,
-            'initial' => '100',
+            'initial' => 10000,
             'main' => true
         ]);
 
         $balance_two = \App\Models\Balance::create([
             'user_id' => 1,
             'exchange_id' => 3,
-            'initial' => '500'
+            'initial' => 50000
         ]);
 
         $this->call([TransactionSeeder::class]);

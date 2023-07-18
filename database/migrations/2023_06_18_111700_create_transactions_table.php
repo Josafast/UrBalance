@@ -16,7 +16,7 @@ return new class extends Migration
             
             $table->string('name');
 
-            $table->decimal('quantity', 10, 2)->default(0);
+            $table->bigInteger('quantity')->default(0);
             $table->boolean('status')->default(true);
             $table->text('notes')->nullable();
 

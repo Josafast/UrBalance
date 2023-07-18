@@ -23,17 +23,17 @@ class BalanceController extends Controller
         $toDo = array(floatval(0),floatval(0));
         foreach($notDone as $nd):
             if ($nd->category->type->id == 2):
-                $toDo[0] = $toDo[0] + floatval($nd->quantity);
+                $toDo[0] = $toDo[0] + floatval($nd->quantity/100);
             endif;
 
             if ($nd->category->type->id == 1){
-                $toDo[1] = $toDo[1] + floatval($nd->quantity);
+                $toDo[1] = $toDo[1] + floatval($nd->quantity/100);
             }
         endforeach;
 
         $balance = array(
-            'total'=>$balance->balance.$sign,
-            'saving'=>$balance->saving.$sign,
+            'total'=>number_format($balance->balance/100, 2).$sign,
+            'saving'=>number_format($balance->saving/100, 2).$sign,
             'deuda'=>number_format($toDo[0],2).$sign,
             'cobro'=>number_format($toDo[1],2).$sign
         );
@@ -45,7 +45,7 @@ class BalanceController extends Controller
     {
         $queries = [
             'userID' => $request->has('userID') ? $request->userID : $request->user()->id,
-            'initial' => floatval($request->initial),
+            'initial' => floatval($request->initial)*100,
             'exchangeID' => intval($request->exchange_id),
             'main' => $request->has('userID') ? true : false 
         ];
@@ -66,20 +66,20 @@ class BalanceController extends Controller
 
     public function store($balance)
     {
-        $calc = [floatval($balance->initial), floatval($balance->saving)];
+        $calc = [intval($balance->initial), intval($balance->saving)];
         $transactions = $balance->transactions;
 
         foreach ($transactions as $transaction):
             if ($transaction->status):
                 switch($transaction->category->type->id):
                     case 1:
-                        $calc[0] += floatval($transaction->quantity);
+                        $calc[0] += intval($transaction->quantity);
                         break;
                     case 3:
-                        $calc[1] += floatval($transaction->quantity);
+                        $calc[1] += intval($transaction->quantity);
                         break;
                     default:
-                        $calc[0] -= floatval($transaction->quantity);
+                        $calc[0] -= intval($transaction->quantity);
                         break;
                 endswitch;
             endif;

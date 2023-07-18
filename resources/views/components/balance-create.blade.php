@@ -6,7 +6,7 @@
         </span>
         <label for="initial" class="balance-label">
             <h4>Selecciona el valor inicial de tu cuenta:</h4>
-            <input type="number" required name="initial" class="number">
+            <input type="number" required min="0.01" step="0.01" value="0.00" name="initial" class="number">
         </label>
         <label for="exchange_id" class="balance-label">
             <h4>Selecciona la tasa de cambio</h4>

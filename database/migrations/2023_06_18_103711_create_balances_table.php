@@ -20,9 +20,9 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('exchange_id')->references('id')->on('exchanges')->cascadeOnDelete();
 
-            $table->decimal('balance', 10, 2)->default(0);
-            $table->decimal('saving', 10, 2)->default(0);
-            $table->decimal('initial', 10, 2);
+            $table->bigInteger('balance')->default(0);
+            $table->bigInteger('saving')->default(0);
+            $table->bigInteger('initial');
 
             $table->boolean('main')->default(false);
 

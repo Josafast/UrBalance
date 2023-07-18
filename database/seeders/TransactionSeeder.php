@@ -12,52 +12,52 @@ class TransactionSeeder extends Seeder
     {
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 20,
+            'quantity' => 2000,
             'category_id' => 6
         ]);
 
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 10,
+            'quantity' => 1000,
             'category_id' => 2
         ]);
 
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 20,
+            'quantity' => 2000,
             'category_id' => 13
         ]);
 
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 15.5,
+            'quantity' => 1550,
             'category_id' => 6,
             'status' => false
         ]);
 
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 10.3,
+            'quantity' => 1030,
             'category_id' => 7,
             'status' => false
         ]);
 
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 100,
+            'quantity' => 1000,
             'category_id' => 7,
             'status' => true
         ]);
 
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 10,
+            'quantity' => 1000,
             'category_id' => 14
         ]);
 
         Transaction::create([
             'name' => 'Transaccion genérica',
-            'quantity' => 40,
+            'quantity' => 4000,
             'category_id' => 15
         ]);
     }

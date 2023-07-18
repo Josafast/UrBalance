@@ -11,7 +11,7 @@
       </label>
       <label for="quantity">
         <span class="transaction_span">
-          <input type="number" step="0.01" min="0.01" name="quantity" id="quantity-input" value="{{ isset($transaction) ? number_format($transaction->quantity, 2) : '0.00' }}" class="number">&nbsp;{{ App\Models\Exchange::where('id', request()->session()->get('main'))->first()->sign }}
+          <input type="number" step="0.01" min="0.01" name="quantity" id="quantity-input" value="{{ isset($transaction) ? number_format($transaction->quantity/100, 2) : '0.00' }}" class="number">&nbsp;{{ App\Models\Exchange::where('id', request()->session()->get('main'))->first()->sign }}
           <script>
             let quantityInput = document.getElementById('quantity-input');
             
