@@ -6,12 +6,12 @@
   <nav class="nav" style="margin-left: auto;">
     <ul>
       @auth
-        <li><a href="{{ route('dashboard') }}" style="font-weight: {{ request()->routeIs('dashboard') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">Dashboard</a></li>
-        <li><a href="{{ route('transactions.index') }}" style="font-weight: {{ request()->routeIs('transactions.index') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">Transacciones</a></li>
-        <li><a href="{{ route('profile.index') }}" style="font-weight: {{ request()->routeIs('profile.index') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">Perfil</a></li>
+        <li><a href="{{ route('dashboard') }}" style="font-weight: {{ request()->routeIs('dashboard') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">{{ __('header.dashboard') }}</a></li>
+        <li><a href="{{ route('transactions.index') }}" style="font-weight: {{ request()->routeIs('transactions.index') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">{{ __('header.transactions') }}</a></li>
+        <li><a href="{{ route('profile.index') }}" style="font-weight: {{ request()->routeIs('profile.index') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">{{ __('header.profile') }}</a></li>
         <li><form action="{{ route('logout') }}" method="post">
           @csrf
-          <a href="#" id="logout" @if (request()->routeIs('index')) style="color: #fff" !important; @endif>Salir</a>
+          <a href="#" id="logout" @if (request()->routeIs('index')) style="color: #fff" !important; @endif>{{ __('header.logout') }}</a>
           <script>
             document.getElementById('logout').addEventListener('click',(e)=>{
               e.preventDefault();
@@ -28,8 +28,8 @@
           </li>
         @endif
       @else
-        <li><a href="{{ route('login.view') }}" style="font-weight: {{ request()->routeIs('login.view') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">Iniciar sesión</a></li>
-        <li><a href="{{ route('register.view') }}" style="font-weight: {{ request()->routeIs('register.view') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">Registrarse</a></li>
+        <li><a href="{{ route('login.view') }}" style="font-weight: {{ request()->routeIs('login.view') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">{{ __('header.login')}}</a></li>
+        <li><a href="{{ route('register.view') }}" style="font-weight: {{ request()->routeIs('register.view') ? 'bold' : 'normal' }}; @if (request()->routeIs('index')) color: #fff !important; @endif">{{ __('header.signin') }}</a></li>
       @endauth
     </ul>
   </nav>

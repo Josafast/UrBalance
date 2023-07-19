@@ -14,7 +14,7 @@ class ChartJS extends Component
     public $labels;
     public function __construct($transactions, string $type, array $sinceUntil)
     {
-        $searchINT = $type == 'entrance' ? 1 : ($type == 'spent' ? 2 : 3);
+        $searchINT = $type == 'entrance' ? 1 : ($type == 'spend' ? 2 : 3);
         $queries = [
             'type' => $searchINT,
             'state' => 'true',
@@ -23,8 +23,7 @@ class ChartJS extends Component
             'since' => $sinceUntil[0],
             'until' => $sinceUntil[1]
         ]; 
-        $this->type = $type;
-        $searchINT = $type == 'entrance' ? 1 : ($type == 'spent' ? 2 : 3);
+        $this->type = __('transactions.types.'.$type);
 
         $searchedTransactions = app()->make('App\Http\Controllers\TransactionController');
         $searchedTransactions = $searchedTransactions->show($transactions, $queries);
@@ -55,7 +54,7 @@ class ChartJS extends Component
         foreach($searchedTransactions as $transaction){
             for($i=0; $i<count($labels['name']); $i++){
                 if ($labels['name'][$i] == $transaction->category->name){
-                    $labels['data']['transactions'][$i] = floatval($labels['data']['transactions'][$i]) + floatval($transaction->quantity);
+                    $labels['data']['transactions'][$i] = $labels['data']['transactions'][$i] + intval($transaction->quantity);
                 }
             }
         }

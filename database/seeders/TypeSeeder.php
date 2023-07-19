@@ -14,7 +14,7 @@ class TypeSeeder extends Seeder
     {
         $types = [
             'Entrance' => 'blue',
-            'Spent' => 'red',
+            'Spend' => 'red',
             'Saving' => 'yellow'
         ];
 

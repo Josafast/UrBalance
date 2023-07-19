@@ -1,8 +1,16 @@
 @php
     $body = $labels->getData();
 
-    $name = json_encode($body->name, true);
-    $values = json_encode($body->data->transactions, true);
+    $names = $body->name;
+    $names = array_map(function($name){
+        return __('transactions.categories.'.strtolower($name));
+    }, $names);
+
+    $values = $body->data->transactions;
+    $values = array_map(function($value){
+        return ($value/100);
+    }, $values);
+
     $colors = json_encode($body->data->color, true);;
 @endphp
 
@@ -11,7 +19,7 @@
     <script>
         let {{ $type }} = document.getElementById("{{ $type }}");
 
-        let string{{ $type }} = "{{ $name }}";
+        let string{{ $type }} = "{{ json_encode($names, true) }}";
         string{{ $type }} = JSON.parse(string{{ $type }}.replace(/&quot;/g, '"'));
 
         let color{{ $type }} = "{{ $colors }}";
@@ -24,7 +32,7 @@
             labels: string{{ $type }},
             datasets: [{
                 label: '{{ $type }}',
-                data: {{ $values }},
+                data: {{ json_encode($values, true) }},
                 backgroundColor: color{{ $type }},
                 borderColor: 'transparent'
             }]

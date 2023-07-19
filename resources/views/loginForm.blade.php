@@ -1,36 +1,36 @@
-<x-app-layout title="{{request()->routeIs('login.view') ? 'Ingresar' : 'Registrarse'}}">
+<x-app-layout title="{{request()->routeIs('login.view') ? __('titles.login') : __('titles.signin') }}">
   <form action="{{ route(request()->routeIs('login.view') ? 'login' : 'register' ) }}" method="post" class="form login_form" style="color: #fff; background-color: var(--red); margin: auto;width: 400px;">
     @csrf
     @if ($into)
       <label for="name">
         <input type="text" name="name" required value="{{ old('name') }}">
-        <h3>Nombre</h3>
+        <h3>{{ __('validation_fields.name') }}</h3>
       </label>
     <div class="nameErrors"></div>
     @endif
       <label for="email">
         <input type="text" name="email" required value="{{ old('email') }}">
-        <h3>Correo electrónico</h3>
+        <h3>{{ __('validation_fields.email') }}</h3>
       </label>
       <div class="emailErrors" style="margin-bottom: 10px"></div>
       <label for="password">
         <input type="password" name="password" required value="{{ old('password') }}">
-        <h3>Contraseña</h3> 
+        <h3>{{ __('validation_fields.password') }}</h3> 
       </label>
       <div class="passwordErrors" style="margin-bottom: 10px"></div>
     @if ($into)
       <label for="password_confirmation" style="margin-bottom: 60px">
         <input type="password" required name="password_confirmation">
-        <h3>Confirmar contraseña</h3>
+        <h3>{{ __('validation_fields.confirm_password') }}</h3>
       </label>
       <div class="password_confirmationErrors" style="margin-bottom: 10px"></div>
     @else
       <label for="rememberMe" style="display:flex;margin: 0; margin-top: 30px;">
         <input type="checkbox" name="rememberMe" style="width: min-content;margin-right: 10px;">
-        <h4>Recuérdame</h4>
+        <h4>{{ __('validation_fields.remember_me') }}</h4>
       </label>
     @endif
-    <input type="submit" value="{{ request()->routeIs('login.view') ? 'Ingresar' : 'Siguiente' }}" style="background-color: #fff; color: var(--red)">
+    <input type="submit" value="{{ request()->routeIs('login.view') ? __('validation_fields.buttons.login') : __('validation_fields.buttons.next') }}" style="background-color: #fff; color: var(--red)">
   </form>
 
   <script>

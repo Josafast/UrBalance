@@ -5,23 +5,23 @@
 ];
 @endphp
 
-<x-app-layout title="Dashboard">
+<x-app-layout title="{{ __('titles.dashboard') }}">
   <section class="dashboard-values">
     <div>
-      <h3>Total:</h3>
+      <h3>{{ __('dashboard.total') }}:</h3>
       <h2 style="color: var(--green)">{{ $balance['total'] }}</h2>
     </div>
     <div>
-      <h3>Ahorros:</h3>
+      <h3>{{ __('dashboard.savings') }}:</h3>
       <h2 style="color: var(--yellow)">{{ $balance['saving'] }}</h2>
     </div>
     <div>
-      <h3>Deudas:</h3>
-      <h2 style="color: var(--red)">{{ $balance['deuda'] }}</h2>
+      <h3>{{ __('dashboard.debts') }}:</h3>
+      <h2 style="color: var(--red)">{{ $balance['debts'] }}</h2>
     </div>
     <div>
-      <h3>Cobros:</h3>
-      <h2 style="color: var(--blue)">{{ $balance['cobro'] }}</h2>
+      <h3>{{ __('dashboard.charges') }}:</h3>
+      <h2 style="color: var(--blue)">{{ $balance['charges'] }}</h2>
     </div>
   </section>
   <section class="dashboard-charts">
@@ -32,21 +32,21 @@
     @php
       $transactions = App\Models\Balance::where('exchange_id',request()->session()->get('main'))->where('user_id',request()->user()->id)->first()->transactions;
     @endphp
-    <x-chart-js :transactions="$transactions" :type="'spent'" :sinceUntil="$sinceUntil"/>
+    <x-chart-js :transactions="$transactions" :type="'spend'" :sinceUntil="$sinceUntil"/>
     <x-chart-js :transactions="$transactions" :type="'entrance'" :sinceUntil="$sinceUntil"/>
     <x-chart-js :transactions="$transactions" :type="'saving'" :sinceUntil="$sinceUntil"/>
   </section>
   <section class="dashboard-select-date">
     <form action="{{ route('dashboard') }}" method="get" id="sinceUntil" class="form date_form">
       <label for="since">
-        <h2>Desde: </h2>
+        <h2>{{ __('query_fields.since') }}: </h2>
         <input type="date" name="since" id="dateSINCE">
       </label>
       <label for="until">
-        <h2>Hasta: </h2>
+        <h2>{{ __('query_fields.until') }}: </h2>
         <input type="date" name="until" id="dateUNTIL">
       </label>
-      <input type="submit" value="Cambiar" style="position: relative; margin: 0; display: none;" id="submit">
+      <input type="submit" value="{{ __('validation_fields.buttons.filter') }}" style="position: relative; margin: 0; display: none;" id="submit">
     </form>
     <script>
       let dateSINCE = document.getElementById('dateSINCE');

@@ -66,8 +66,8 @@ class TransactionController extends Controller
 
             if ($queries['base'] != '' || $queries['limit'] != ''){
                 $baseLimit = [
-                    $queries['base'] == null ? '0' : $queries['base'],
-                    $queries['limit'] == null ? '100000000000000000000000' : $queries['limit']
+                    $queries['base'] == null ? '0' : $queries['base']*100,
+                    $queries['limit'] == null ? '100000000000000000000000' : $queries['limit']*100
                 ];
                 $transactions = $transactions->filter(function ($transaction) use ($baseLimit) {
                     return $transaction->quantity >= $baseLimit[0] && $transaction->quantity <= $baseLimit[1];

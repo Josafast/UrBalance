@@ -2,7 +2,7 @@
   <a href="https://josafast.github.io/JosafatPortofolio">
     <img src="{{ asset('img/jfastSFX.svg') }}" alt="Josafast_logo">
   </a>
-  <p style="text-align: center;">Todos los derechos reservados para Ionic, y el uso de sus iconos "Ion-Icons"; y para la organización de Chart.js y su API de gráficas estadisticas © <b class="year"></b></p>
+  <p style="text-align: center;">{{ __('footer.copyright') }}<b class="year"></b></p>
   @auth
     <button id="change_balance" style="cursor: pointer; position: relative;">
       <img src="{{ asset('img/swap.svg') }}" alt="swap">

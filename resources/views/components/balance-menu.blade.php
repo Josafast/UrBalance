@@ -4,7 +4,7 @@
     <span class="close" id="closeFloatMenu">
       <img src="{{ asset('img/close.svg') }}" alt="close-icon" style="pointer-events: none; user-select: none;">
     </span>
-    <h2 style="margin: 0 100px 30px 0;">Elige tu balance</h2>
+    <h2 style="margin: 0 100px 30px 0;">{{ __('validation_fields.titles.select_your_balance') }}</h2>
     <label for="change_main" style="margin: 0;">
       <input type="hidden" name="change_main" id="change_main" value="false">
     </label>
@@ -25,20 +25,20 @@
         @if ($balance->exchange_id == request()->session()->get('main'))
             selected
         @endif" id="{{ $balance->exchange_id }}">
-          {{ $balance->exchange->name }}
+          {{ __('exchange.'.strtolower($balance->exchange->name)) }}
           @if ($balance->exchange_id == request()->session()->get('main'))
-            (Current)
+            ({{ __('exchange.current') }})
           @endif
         </li>
       @endforeach
     </ul>
     <div style="margin-top: 30px; display: flex; justify-content: space-between; gap: 20px;">
-      <button style="position: relative;" id="change_balance_button" option="1">Cambiar</button>
-      <button style="position: relative;" id="change_main_balance_button" option="2">Cambiar principal</button>
+      <button style="position: relative;" id="change_balance_button" option="1">{{ __('validation_fields.buttons.change') }}</button>
+      <button style="position: relative;" id="change_main_balance_button" option="2">{{ __('validation_fields.buttons.change_main') }}</button>
       @if (count($balances) < count(App\Models\Exchange::all()))
-        <button style="position: relative;" id="create_balance_button" option="3">Crear</button>
+        <button style="position: relative;" id="create_balance_button" option="3">{{ __('validation_fields.buttons.create') }}</button>
       @endif
-      <button style="position: relative;" id="delete_balance_button" option="4">Eliminar</button>
+      <button style="position: relative;" id="delete_balance_button" option="4">{{ __('validation_fields.buttons.delete') }}</button>
     </div>
   </form>
   <script>

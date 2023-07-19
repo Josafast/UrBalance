@@ -34,8 +34,8 @@ class BalanceController extends Controller
         $balance = array(
             'total'=>number_format($balance->balance/100, 2).$sign,
             'saving'=>number_format($balance->saving/100, 2).$sign,
-            'deuda'=>number_format($toDo[0],2).$sign,
-            'cobro'=>number_format($toDo[1],2).$sign
+            'debts'=>number_format($toDo[0],2).$sign,
+            'charges'=>number_format($toDo[1],2).$sign
         );
 
         return $balance;
