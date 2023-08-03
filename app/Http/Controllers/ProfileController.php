@@ -13,7 +13,6 @@ class ProfileController extends Controller
         $credentials = Validator::make($request->only(['name', 'email']), [
             'name' => 'required|min:3|max:50|string',
             'email' => ['required','email', $request->user()->email == $request->email ? '' : 'unique:users']
-
         ]);
 
         if ($credentials->fails()){

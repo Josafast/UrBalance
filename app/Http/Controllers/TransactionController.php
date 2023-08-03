@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Balance;
 use DateTime;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -23,19 +22,22 @@ class TransactionController extends Controller
         return view('transactions-create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function notes(Request $request){
+        $transaction = $this->find($request->id);
+        return response()->json(['notes' => parsedown($transaction->notes), 'name' => $transaction->name], 200);
+    }
+
     public function store(Request $request)
     {
         $balanceDestiny = $request->user()->balance->where('exchange_id', $request->session()->get('main'))->first();
         $balanceDestinyID = $balanceDestiny->id;
 
-        $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id']);
+        $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id', 'date']);
         
         $data['quantity'] = floatval($data['quantity']);
         $data['quantity'] *= 100;
         $data['quantity'] = intval($data['quantity']);
+        $data['date'] = new DateTime($data['date']);
 
         $transaction = Transaction::create($data);
 
@@ -43,6 +45,9 @@ class TransactionController extends Controller
             'balance_id' => $balanceDestinyID,
             'transaction_id' => $transaction->id
         ]);
+
+        $balanceUpdateValues = app()->make('App\Http\Controllers\BalanceController');
+        $balanceUpdateValues->store($balanceDestiny);
 
         return redirect()->route('dashboard');
     }
@@ -53,7 +58,7 @@ class TransactionController extends Controller
             if ($queries['type'] != '') {
                 $type = $queries['type'];
                 $transactions = $transactions->filter(function ($transaction) use ($type) {
-                    return $transaction->category->type_id == $type;
+                    return $transaction->category->type_id == intval($type);
                 });
             }
 
@@ -80,7 +85,7 @@ class TransactionController extends Controller
                     $queries['until'] == null ? new DateTime() : date_modify(new DateTime($queries['until']), '+1 day')
                 ];
                 $transactions = $transactions->filter(function ($transaction) use ($sinceUntil) {
-                    return new DateTime($transaction->created_at) >= $sinceUntil[0] && new DateTime($transaction->created_at) <= $sinceUntil[1];
+                    return new DateTime($transaction->date) >= $sinceUntil[0] && new DateTime($transaction->date) <= $sinceUntil[1];
                 });
             }
         }
@@ -112,15 +117,20 @@ class TransactionController extends Controller
     {
         $transaction = $this->find($request->transaction);
         if ($transaction){
-            $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id']);
+            $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id', 'date']);
 
             $data['quantity'] = floatval($data['quantity']);
             $data['quantity'] *= 100;
             $data['quantity'] = intval($data['quantity']);
+            $data['date'] = new DateTime($data['date']);
 
             $transaction->update($data);
+            
+            $balanceUpdateValues = app()->make('App\Http\Controllers\BalanceController');
+            $balanceUpdateValues->store($transaction->balance->first());
+
             return redirect()->route('transactions.index');
-        } 
+        }
 
         return redirect(request()->session()->get('_previous')['url']);
     }
@@ -129,7 +139,11 @@ class TransactionController extends Controller
     {
         $transaction = $this->find($id);
         if ($transaction){
+            $balance = $transaction->balance->first();
             $transaction->delete();
+
+            $balanceUpdateValues = app()->make('App\Http\Controllers\BalanceController');
+            $balanceUpdateValues->store($balance);
         } 
 
         return redirect()->route('transactions.index');

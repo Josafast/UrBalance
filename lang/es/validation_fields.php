@@ -15,6 +15,8 @@ return [
     'delete_user' => 'Borrar usuario',
     'select_your_balance' => 'Selecciona tu balance',
     'select_initial_value' => 'Selecciona el valor inicial de tu nuevo balance',
+    'create_balance' => 'Crear nuevo balance',
+    'change_main_balance' => 'Cambiar balance principal',
     'select_exchange' => 'Selecciona la tasa de cambio',
     'filtered' => 'Filtrado'
   ],
@@ -31,6 +33,7 @@ return [
     'change' => 'Cambiar',
     'change_main' => 'Cambiar principal',
     'create' => 'Crear',
+    'create_transaction' => 'Crear transacción',
     'delete' => 'Borrar',
     'delete_user' => 'Borrar usuario'
   ]

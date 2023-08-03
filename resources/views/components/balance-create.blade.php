@@ -1,6 +1,9 @@
-<div class="float" style="display: none;" id="create_balance">
+<div class="float create_balance" style="display: none;">
     <form action="{{ route('balance.create') }}" id="balance-create" class="form" method="post">
         @csrf
+        @if (!request()->routeIs('register.view'))
+            <h2>{{ __('validation_fields.titles.create_balance') }}</h2>
+        @endif
         <span class="close" id="closeFloatCreate">
             <img src="{{ asset('img/close.svg') }}" alt="close-icon" style="pointer-events: none; user-select: none;">
         </span>

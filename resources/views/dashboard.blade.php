@@ -1,28 +1,6 @@
-@php
-  $sinceUntil = [
-    request()->has('since') ? request()->input('since') : null,
-    request()->has('until') ? request()->input('until') : null 
-];
-@endphp
-
 <x-app-layout title="{{ __('titles.dashboard') }}">
   <section class="dashboard-values">
-    <div>
-      <h3>{{ __('dashboard.total') }}:</h3>
-      <h2 style="color: var(--green)">{{ $balance['total'] }}</h2>
-    </div>
-    <div>
-      <h3>{{ __('dashboard.savings') }}:</h3>
-      <h2 style="color: var(--yellow)">{{ $balance['saving'] }}</h2>
-    </div>
-    <div>
-      <h3>{{ __('dashboard.debts') }}:</h3>
-      <h2 style="color: var(--red)">{{ $balance['debts'] }}</h2>
-    </div>
-    <div>
-      <h3>{{ __('dashboard.charges') }}:</h3>
-      <h2 style="color: var(--blue)">{{ $balance['charges'] }}</h2>
-    </div>
+    <x-dashboard-values :balanceValues="$balanceValues"/>
   </section>
   <section class="dashboard-charts">
     <script>
@@ -30,21 +8,33 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" stye="display:none;"></script>
     @php
-      $transactions = App\Models\Balance::where('exchange_id',request()->session()->get('main'))->where('user_id',request()->user()->id)->first()->transactions;
+      $transactions = request()->user()->balance->where('exchange_id', request()->session()->get('main'))->first()->transactions;
     @endphp
-    <x-chart-js :transactions="$transactions" :type="'spend'" :sinceUntil="$sinceUntil"/>
-    <x-chart-js :transactions="$transactions" :type="'entrance'" :sinceUntil="$sinceUntil"/>
-    <x-chart-js :transactions="$transactions" :type="'saving'" :sinceUntil="$sinceUntil"/>
+    <div class="glide">
+      <div class="glide__track" data-glide-el="track">
+        <ul class="glide__slides">
+          <x-chart-js :transactions="$transactions" :type="'spend'" :sinceUntil="$sinceUntil"/>
+          <x-chart-js :transactions="$transactions" :type="'entrance'" :sinceUntil="$sinceUntil"/>
+          <x-chart-js :transactions="$transactions" :type="'saving'" :sinceUntil="$sinceUntil"/>
+        </ul>
+      </div>
+    </div>
   </section>
   <section class="dashboard-select-date">
     <form action="{{ route('dashboard') }}" method="get" id="sinceUntil" class="form date_form">
       <label for="since">
         <h2>{{ __('query_fields.since') }}: </h2>
-        <input type="date" name="since" id="dateSINCE">
+        <input type="date" name="since" id="dateSINCE" 
+        @if (request()->has('since'))
+          value = "{{ old('since') ? old('since') : request()->input('since') }}"
+        @endif>
       </label>
       <label for="until">
         <h2>{{ __('query_fields.until') }}: </h2>
-        <input type="date" name="until" id="dateUNTIL">
+        <input type="date" name="until" id="dateUNTIL"
+        @if (request()->has('until'))
+          value = "{{ old('until') ? old('until') : request()->input('until') }}"
+        @endif>
       </label>
       <input type="submit" value="{{ __('validation_fields.buttons.filter') }}" style="position: relative; margin: 0; display: none;" id="submit">
     </form>
@@ -58,14 +48,6 @@
 
       dateSINCE.addEventListener('change',showButton);
       dateUNTIL.addEventListener('change',showButton);
-
-      @if (request()->has('since'))
-        dateSINCE.value = "{{ old('since') ? old('since') : request()->input('since') }}";
-      @endif
-
-      @if (request()->has('until'))
-        dateUNTIL.value = "{{ old('since') ? old('since') : request()->input('until') }}";
-      @endif
     </script>
   </section>
 </x-app-layout>

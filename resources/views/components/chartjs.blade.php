@@ -11,10 +11,11 @@
         return ($value/100);
     }, $values);
 
-    $colors = json_encode($body->data->color, true);;
+    $colors = json_encode($body->data->color, true);
 @endphp
 
-<div class="chart-container">
+<li class="glide__slide chart-container" style="flex-direction:column">
+    <h2 style="font-weight: bold; font-size: 1.8em; margin-bottom: 25px;">{{ $type }}</h2>
     <canvas id="{{ $type }}"></canvas>
     <script>
         let {{ $type }} = document.getElementById("{{ $type }}");
@@ -62,4 +63,4 @@
             }
         });
     </script>
-</div>
+</li>

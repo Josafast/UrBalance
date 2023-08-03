@@ -35,31 +35,21 @@ class FormSubmitter {
     this.method = this.formData.has('_method') ? this.formData.get('_method') : formulary.method;
   
     if (this.method.toUpperCase() == 'GET'){
-      let path = new URL(window.location.href);
+      let path = new URL(window.location);
       let pathname = "";
       for (let [labelName, labelValue] of this.formData.entries()){
         pathname += labelName + "=" + labelValue + "&";
       }
-      location.replace(path.href + "?" + pathname.slice(0, pathname.length-1));
+      path.search = pathname.slice(0, pathname.length-1);
+      location.replace(path.href);
     }
   } 
 
   balanceMenuSelector(buttonValue){
     let path = new URL(window.location.href);
-    this.method = 'put';
 
     if (buttonValue == "2"){
       this.formData.set('change_main', true);
-    }
-    
-    if (buttonValue == "3"){
-      document.getElementById('create_balance').removeAttribute('style');
-      this.submitOK = false;
-      setTimeout(()=>{
-        this.submitOK = !this.submitOK;
-        this.method = 'post';
-      }, 200);
-      return;
     }
 
     if (buttonValue == "4"){
@@ -72,8 +62,8 @@ class FormSubmitter {
   }
 
   updateFormDataFromRegisterForm(){
-    if (document.getElementById('balance-create').parentElement.hasAttribute('style')){
-      document.getElementById('balance-create').parentElement.removeAttribute('style');
+    if (document.querySelector('.create_balance').hasAttribute('style')){
+      document.querySelector('.create_balance').removeAttribute('style');
       this.submitOK = false;
       return;
     }
@@ -102,7 +92,17 @@ class FormSubmitter {
           return res.json().then(error => { throw error; });
         }
 
-        return res.json().then(data => location.replace(data.link));
+        return res.json().then(data =>{ 
+          if ("link" in data){
+            location.replace(data.link)
+          }
+
+          if ("notes" in data){
+            document.querySelector('.notes-text').innerHTML = data.notes;
+            document.querySelector('.notes-title').children[0].innerHTML = data.name;
+            document.getElementById('notes-square').style.display = "flex";
+          }
+        });
       }).catch(err=>{
         for(let [errorField, errorMessages] of Object.entries(err)){
           document.querySelector(`.${errorField}Errors`).innerHTML = "";

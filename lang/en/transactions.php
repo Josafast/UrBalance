@@ -30,7 +30,8 @@ return [
     'leisure' => 'Leisura',
     'short-term' => 'Short-Term',
     'medium-term' => 'Medium-Term',
-    'long-term' => 'Long-Term'
+    'long-term' => 'Long-Term',
+    'savings' => 'Savings'
   ],
 
   'state' => [

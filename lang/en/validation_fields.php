@@ -16,6 +16,8 @@ return [
     'select_your_balance' => 'Select your balance',
     'select_initial_value' => 'Select the initial value of your new account',
     'select_exchange' => 'Select the exchange rate',
+    'create_balance' => 'Create a new Balance',
+    'change_main_balance' => 'Change main balance',
     'filtered' => 'Filtered'
   ],
 
@@ -31,6 +33,7 @@ return [
     'change' => 'Change',
     'change_main' => 'Change main',
     'create' => 'Create',
+    'create_transaction' => 'Create a new Transaction',
     'delete' => 'Delete',
     'delete_user' => 'Delete user'
   ]

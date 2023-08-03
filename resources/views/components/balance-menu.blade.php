@@ -1,6 +1,7 @@
-<div class="float" id="menu_balance" style="display: none;">
+<div class="float menu_balance" style="display: none;">
   <form action="{{ route('balance.change-main') }}" method="post" id="balance-menu" class="form">
     @csrf
+    @method('put')
     <span class="close" id="closeFloatMenu">
       <img src="{{ asset('img/close.svg') }}" alt="close-icon" style="pointer-events: none; user-select: none;">
     </span>
@@ -32,30 +33,11 @@
         </li>
       @endforeach
     </ul>
-    <div style="margin-top: 30px; display: flex; justify-content: space-between; gap: 20px;">
+    <div style="margin-top: 30px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
       <button style="position: relative;" id="change_balance_button" option="1">{{ __('validation_fields.buttons.change') }}</button>
       <button style="position: relative;" id="change_main_balance_button" option="2">{{ __('validation_fields.buttons.change_main') }}</button>
-      @if (count($balances) < count(App\Models\Exchange::all()))
-        <button style="position: relative;" id="create_balance_button" option="3">{{ __('validation_fields.buttons.create') }}</button>
-      @endif
       <button style="position: relative;" id="delete_balance_button" option="4">{{ __('validation_fields.buttons.delete') }}</button>
     </div>
   </form>
-  <script>
-      document.getElementById('closeFloatMenu').addEventListener('click',(e)=>{
-        e.target.parentElement.parentElement.style.display = "none";
-      });
-
-      let list = document.querySelectorAll('.list-element'); 
-
-      list.forEach(option=>{
-        option.addEventListener('click', function(){
-          list.forEach(option=>{
-            option.classList.remove('selected');
-          });
-          this.classList.add('selected');
-          document.getElementById('main-id').value = this.getAttribute('id');
-        });
-      });
-  </script>
+  @vite(['resources/js/balance-menu.js'])
 </div>

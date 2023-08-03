@@ -10,10 +10,9 @@ class BalanceController extends Controller
 {
     public function index($main)
     {
-        
         $balance = $main == 'yes'
-        ? Balance::where('main', true)->where('user_id', request()->user()->id)->first()
-        : Balance::where('exchange_id',$main)->where('user_id',request()->user()->id)->first();
+            ? Balance::where('main', true)->where('user_id', request()->user()->id)->first()
+            : Balance::where('exchange_id',$main)->where('user_id',request()->user()->id)->first();
 
         request()->session()->put('main', $balance->exchange_id);
 
@@ -33,7 +32,7 @@ class BalanceController extends Controller
 
         $balance = array(
             'total'=>number_format($balance->balance/100, 2).$sign,
-            'saving'=>number_format($balance->saving/100, 2).$sign,
+            'savings'=>number_format($balance->saving/100, 2).$sign,
             'debts'=>number_format($toDo[0],2).$sign,
             'charges'=>number_format($toDo[1],2).$sign
         );
@@ -66,7 +65,7 @@ class BalanceController extends Controller
 
     public function store($balance)
     {
-        $calc = [intval($balance->initial), intval($balance->saving)];
+        $calc = [intval($balance->initial), 0];
         $transactions = $balance->transactions;
 
         foreach ($transactions as $transaction):
@@ -79,8 +78,13 @@ class BalanceController extends Controller
                         $calc[1] += intval($transaction->quantity);
                         break;
                     default:
-                        $calc[0] -= intval($transaction->quantity);
-                        break;
+                        if ($transaction->category_id == 12){
+                            $calc[1] -= intval($transaction->quantity);
+                            break;
+                        } else {
+                            $calc[0] -= intval($transaction->quantity);
+                            break;
+                        }
                 endswitch;
             endif;
         endforeach;
@@ -95,7 +99,7 @@ class BalanceController extends Controller
         if ($request->boolean('change_main')){
             $balances = $request->user()->balance;
             $balances->map(function($balance) use ($request){
-                if ($balance->exchange_id ==  $request->session()->get('main')){
+                if ($balance->exchange_id == $request->session()->get('main')){
                     $balance->main = false;
                     $balance->save();
                 }

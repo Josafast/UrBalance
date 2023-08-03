@@ -3,6 +3,7 @@
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('index');
@@ -25,11 +26,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/destroy', [ProfileController::class, 'destroy'])->name('destroy');
         Route::view('/', 'profile')->name('index');
     });
-    ROute::prefix('/balance')->name('balance.')->group(function (){
+    Route::prefix('/balance')->name('balance.')->group(function (){
         Route::put('/change-main', [BalanceController::class, 'update'])->name('change-main');
         Route::post('/create', [BalanceController::class, 'create'])->name('create');
         Route::delete('/delete', [BalanceController::class, 'destroy'])->name('delete');
     });
-    Route::resource('/transactions', App\Http\Controllers\TransactionController::class);
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('/transactions/notes', [TransactionController::class, 'notes'])->name('transactions.notes');
+    Route::resource('/transactions', TransactionController::class);
+    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 });

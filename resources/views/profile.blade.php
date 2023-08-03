@@ -1,5 +1,5 @@
 <x-app-layout title="{{ __('titles.profile') }}">
-  <form action="{{ route('profile.change_email') }}" method="post" style="width: 50%;" class="form">
+  <form action="{{ route('profile.change_email') }}" method="post" class="form profile_form">
     @csrf
     @method('put')
     <h2 style="margin-bottom: 20px;">{{ __('validation_fields.titles.change_name_or_email') }}</h2>
@@ -15,7 +15,7 @@
     <div class="emailErrors"></div>
     <input type="submit" value="{{ __('validation_fields.buttons.change') }}">
   </form>
-  <form action="{{ route('profile.change_password') }}" method="post" style="width: 50%;" class="form">
+  <form action="{{ route('profile.change_password') }}" method="post" class="form profile_form">
     @csrf
     @method('put')
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -36,7 +36,7 @@
     </label>
     <input type="submit" value="{{ __('validation_fields.buttons.change') }}">
   </form>
-  <form action="{{ route('profile.destroy') }}" method="post" style="width: 50%;" class="form">
+  <form action="{{ route('profile.destroy') }}" method="post" class="form profile_form">
     @csrf
     @method('delete')
     <h2>{{ __('validation_fields.titles.delete_user') }}</h2>

@@ -18,7 +18,7 @@ class TransactionsRows extends Component
         $balance = Balance::where('exchange_id',request()->session()->get('main'))->where('user_id',request()->user()->id)->first();
         $this->sign = $balance->exchange->sign;
         $transactionsFunc = app()->make('App\Http\Controllers\TransactionController');
-        $transactions = $transactionsFunc->show($balance->transactions->sortByDesc('created_at'), request()->query());
+        $transactions = $transactionsFunc->show($balance->transactions->sortByDesc('created_at'), $this->queries);
         $this->transactions = $transactions;
     }
 

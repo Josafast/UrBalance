@@ -12,11 +12,10 @@ class LoginController extends Controller
 {
     public function index(Request $request){
         if (!Auth::guest()){
-            $request->session()->put('main','yes');
             return redirect()->route('dashboard');
         }
 
-        return view('loginForm')->with('into', $request->route()->uri == 'register');
+        return view('loginForm')->with('isRegister', $request->route()->uri == 'register');
     }
 
     public function login(Request $request){

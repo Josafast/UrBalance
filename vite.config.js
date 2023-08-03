@@ -8,6 +8,8 @@ export default defineConfig({
             'resources/js/app.js',
             'resources/js/glide.js',
             'resources/js/forms.js',
+            'resources/js/transactions-create.js',
+            'resources/js/balance-menu.js',
             'node_modules/@glidejs/glide/dist/css/glide.core.min.css',
             'node_modules/@glidejs/glide/dist/css/glide.theme.min.css'],
             refresh: true,

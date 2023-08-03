@@ -1,7 +1,7 @@
 <x-app-layout title="{{request()->routeIs('login.view') ? __('titles.login') : __('titles.signin') }}">
   <form action="{{ route(request()->routeIs('login.view') ? 'login' : 'register' ) }}" method="post" class="form login_form" style="color: #fff; background-color: var(--red); margin: auto;width: 400px;">
     @csrf
-    @if ($into)
+    @if ($isRegister)
       <label for="name">
         <input type="text" name="name" required value="{{ old('name') }}">
         <h3>{{ __('validation_fields.name') }}</h3>
@@ -18,7 +18,7 @@
         <h3>{{ __('validation_fields.password') }}</h3> 
       </label>
       <div class="passwordErrors" style="margin-bottom: 10px"></div>
-    @if ($into)
+    @if ($isRegister)
       <label for="password_confirmation" style="margin-bottom: 60px">
         <input type="password" required name="password_confirmation">
         <h3>{{ __('validation_fields.confirm_password') }}</h3>

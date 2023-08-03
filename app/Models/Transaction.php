@@ -9,7 +9,7 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','quantity','status','notes','category_id'];
+    protected $fillable = ['name','quantity','status','notes','category_id', 'date'];
 
     public function balance(){
         return $this->belongsToMany(Balance::class);

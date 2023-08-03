@@ -28,6 +28,7 @@ class CategoriesSeeder extends Seeder
                 'Education' => 'yellow',
                 'Gift' => 'pink',
                 'Leisure' => 'purple',
+                'Savings' => 'yellow',
                 'Other' => 'red'
             ],
             [

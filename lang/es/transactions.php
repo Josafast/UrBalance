@@ -30,7 +30,8 @@ return [
     'leisure' => 'Ocio',
     'short-term' => 'Plazo Corto',
     'medium-term' => 'Plazo Medio',
-    'long-term' => 'Plazo Largo'
+    'long-term' => 'Plazo Largo',
+    'savings' => 'Ahorros' 
   ],
 
   'state' => [
