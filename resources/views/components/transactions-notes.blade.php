@@ -1,5 +1,5 @@
 <div class="float" id="notes-square" style="padding: 50px; display: none;">
-  <div class="form" style="width: 100%; height: 100%;">
+  <div class="form_styles" style="width: 100%; height: 100%;">
     <h1 class="notes-title">Notas de: <b></b></h1>
     <div class="notes-text">
       <div style="display: flex; justify-content: center;">

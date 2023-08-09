@@ -44,5 +44,13 @@ return [
     'notes' => 'Notes',
     'create_transaction' => 'CREATE TRANSACTION',
     'modify_transaction' => 'MODIFY TRANSACTION'
+  ],
+
+  'messages' => [
+    'modified' => 'Modified Transaction',
+    'deleted' => 'Deleted Transaction',
+    'not_founded' => "Transaction wasn't found",
+    'created' => 'Created Transaction',
+    'not_more_than_having' => "You can't spend more than you have"
   ]
 ];

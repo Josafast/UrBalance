@@ -1,5 +1,5 @@
 <div class="float create_balance" style="display: none;">
-    <form action="{{ route('balance.create') }}" id="balance-create" class="form" method="post">
+    <form action="{{ route('balance.create') }}" id="balance-create" class="form form_styles" method="post">
         @csrf
         @if (!request()->routeIs('register.view'))
             <h2>{{ __('validation_fields.titles.create_balance') }}</h2>

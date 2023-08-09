@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
@@ -19,52 +19,52 @@ class LoginController extends Controller
     }
 
     public function login(Request $request){
-        $remember = $request->has('remember');
-
-        $credentials = Validator::make($request->only(['email', 'password']), [
+        app()->make('App\Http\Controllers\ValidationController')
+        ->validation(
+            $request->only(['email', 'password']), [
             'email' => 'required|email',
             'password' => 'required|string'
         ]);
 
-        if ($credentials->fails()){
-            return response()->json($credentials->errors(), 422);
-        }
-
-        if (!Auth::attempt($request->only(['email', 'password']), $remember)){
+        $user = User::where('email', '=',$request->email)->first();
+        if (!$user){
             return response()->json([
                 'email' => [__('auth.failed')],
+                'password' => ['']
+            ], 422);
+        }
+        if (!Hash::check($request->password, $user->password)){
+            return response()->json([
+                'email' => [''],
                 'password' => [__('auth.password')]
             ], 422);
         }
+        Auth::login($user);
 
-        $request->session()->regenerate();
+        if ($request->has('remember')){
+            $request->session()->regenerate();
+        }
+
         $request->session()->put(
             'main',
-            \App\Models\Balance::where('user_id',$request->user()->id)->where('main',"=",true)->first()->exchange_id
+            $user->balance->where('main', true)->first()->exchange_id
         );
 
         return response()->json(['link' => route('dashboard')], 200);
     }
 
     public function register(Request $request){
-        $credentials = Validator::make($request->only(['name', 'email', 'paswword', 'password_confirmation']), [
-            'name' => 'required|min:3|max:50|string',
-            'email' => 'required|email|unique:users',
-            'password' => ['confirmed', Password::defaults()]
+        app()->make('App\Http\Controllers\ValidationController')
+        ->validation(
+            $request->only(['name', 'email', 'paswword', 'password_confirmation']), [
+                'name' => 'required|min:3|max:50|string',
+                'email' => 'required|email|unique:users',
+                'password' => ['confirmed', Password::defaults()]
         ]);
 
-        if ($credentials->fails()){
-            return response()->json($credentials->errors(), 422);
-        }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password
-        ]);
+        $user = User::create($request->only(['name','email','password']));
 
         $request->merge(['userID' => $user->id]);
-
         $balanceCreateFunc = app()->make('App\Http\Controllers\BalanceController');
         $balanceCreateFunc->create($request);
 

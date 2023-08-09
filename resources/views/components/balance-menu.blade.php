@@ -1,5 +1,5 @@
 <div class="float menu_balance" style="display: none;">
-  <form action="{{ route('balance.change-main') }}" method="post" id="balance-menu" class="form">
+  <form action="{{ route('balance.change-main') }}" method="post" id="balance-menu" class="form form_styles">
     @csrf
     @method('put')
     <span class="close" id="closeFloatMenu">
@@ -36,7 +36,9 @@
     <div style="margin-top: 30px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
       <button style="position: relative;" id="change_balance_button" option="1">{{ __('validation_fields.buttons.change') }}</button>
       <button style="position: relative;" id="change_main_balance_button" option="2">{{ __('validation_fields.buttons.change_main') }}</button>
-      <button style="position: relative;" id="delete_balance_button" option="4">{{ __('validation_fields.buttons.delete') }}</button>
+      @if (count(request()->user()->balance) >= 2)
+        <button style="position: relative;" id="delete_balance_button" option="4">{{ __('validation_fields.buttons.delete') }}</button>
+      @endif
     </div>
   </form>
   @vite(['resources/js/balance-menu.js'])

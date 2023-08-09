@@ -2,7 +2,7 @@
 
 <h1 style="margin: 0 0 10px; font-weight: bold; font-size: 2.2em; color: #545454">
     {{ __('validation_fields.titles.filtered') }}</h1>
-<form action="{{ route('transactions.index') }}" method="GET" class="form transactions_form" style="margin: 0; font-size: .9em;">
+<form action="{{ route('transactions.index') }}" method="GET" class="form form_styles transactions_form" style="margin: 0; font-size: .9em;">
     <div>
         <h2>{{ __('query_fields.type') }}:</h2>
         <label for="type">
@@ -26,12 +26,12 @@
         <label for="state">
             <select name="state">
                 <option value="">{{ __('transactions.types.none') }}</option>
-                <option value="true" @if ($count) 
-                  @if (request()->query()['type'] == 'true') selected @endif
+                <option value="1" @if ($count) 
+                  @if (request()->query()['state'] == '1') selected @endif
                 @endif>
                     {{ __('transactions.state.done') }}</option>
-                <option value="false" @if ($count) 
-                  @if (request()->query()['type'] == '2') selected @endif
+                <option value="0" @if ($count) 
+                  @if (request()->query()['state'] == '0') selected @endif
                 @endif>
                     {{ __('transactions.state.undone') }}</option>
             </select>

@@ -21,7 +21,7 @@ Route::prefix('/components')->name('components.')->group(function (){
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', App\Http\Controllers\DashboardController::class)->name('dashboard');
     Route::prefix('/profile')->name('profile.')->group(function (){
-        Route::put('/change_email', [ProfileController::class, 'change_email'])->name('change_email');
+        Route::put('/change_email_and_name', [ProfileController::class, 'change_email_and_name'])->name('change_email_and_name');
         Route::put('/change_password', [ProfileController::class, 'change_password'])->name('change_password');
         Route::delete('/destroy', [ProfileController::class, 'destroy'])->name('destroy');
         Route::view('/', 'profile')->name('index');
@@ -32,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/delete', [BalanceController::class, 'destroy'])->name('delete');
     });
     Route::post('/transactions/notes', [TransactionController::class, 'notes'])->name('transactions.notes');
+    Route::put('/transactions', [TransactionController::class, 'update'])->name('transactions.updater');
     Route::resource('/transactions', TransactionController::class);
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 });

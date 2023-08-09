@@ -1,12 +1,11 @@
 <x-app-layout title="{{request()->routeIs('login.view') ? __('titles.login') : __('titles.signin') }}">
-  <form action="{{ route(request()->routeIs('login.view') ? 'login' : 'register' ) }}" method="post" class="form login_form" style="color: #fff; background-color: var(--red); margin: auto;width: 400px;">
+  <form action="{{ route(request()->routeIs('login.view') ? 'login' : 'register' ) }}" method="post" class="form form_styles login_form" style="color: #fff; background-color: var(--red); margin: auto;width: 400px;">
     @csrf
     @if ($isRegister)
       <label for="name">
         <input type="text" name="name" required value="{{ old('name') }}">
         <h3>{{ __('validation_fields.name') }}</h3>
       </label>
-    <div class="nameErrors"></div>
     @endif
       <label for="email">
         <input type="text" name="email" required value="{{ old('email') }}">
@@ -17,13 +16,11 @@
         <input type="password" name="password" required value="{{ old('password') }}">
         <h3>{{ __('validation_fields.password') }}</h3> 
       </label>
-      <div class="passwordErrors" style="margin-bottom: 10px"></div>
     @if ($isRegister)
       <label for="password_confirmation" style="margin-bottom: 60px">
         <input type="password" required name="password_confirmation">
         <h3>{{ __('validation_fields.confirm_password') }}</h3>
       </label>
-      <div class="password_confirmationErrors" style="margin-bottom: 10px"></div>
     @else
       <label for="rememberMe" style="display:flex;margin: 0; margin-top: 30px;">
         <input type="checkbox" name="rememberMe" style="width: min-content;margin-right: 10px;">

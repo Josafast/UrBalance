@@ -12,7 +12,7 @@
             </form>
         </td>
         <td style="order: 8;">
-            <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST">
+            <form action="{{ route('transactions.destroy', $transaction->id) }}" class="form" method="POST">
                 @csrf
                 @method('DELETE')
                 <input type="submit" value="🗑️" style="border: none; font-size: 1.1em; cursor: pointer;">

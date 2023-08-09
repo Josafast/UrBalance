@@ -15,7 +15,8 @@
   <title>{{ $attributes['title'] }}</title>
 </head>
 <body>
-  <x-header/>
+  <x-message />
+  <x-header />
 
   <main class="main" @if (request()->routeIs('index')) style="padding: 0;" @endif>
     {{ $slot }}

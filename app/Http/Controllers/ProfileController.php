@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    public function change_email(Request $request){
+    public function change_email_and_name(Request $request){
         $credentials = Validator::make($request->only(['name', 'email']), [
             'name' => 'required|min:3|max:50|string',
             'email' => ['required','email', $request->user()->email == $request->email ? '' : 'unique:users']
@@ -27,7 +27,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return response()->json(['link'=> route('profile.index')], 200);
+        return response()->json(['link' => route('profile.index'), 'messages' => ['message' => [__('profile.messages.modified_email_and_name')]], 'status' => 'edited'], 200);
     }
 
     public function change_password(Request $request){
@@ -46,11 +46,11 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return response()->json(['link'=> route('profile.index')], 200);
+        return response()->json(['link' => route('profile.index'), 'messages' => ['message' => [__('profile.messages.modified_password')]], 'status' => 'edited'], 200);
     }
 
     protected function destroy(Request $request){
-        $credentials = Validator::make($request->only(['password', 'password_confirmation']),[ 
+        $credentials = Validator::make($request->only(['password', 'password_confirmation']), [ 
             'password' => 'required|confirmed|current_password'
         ]);
 
@@ -58,15 +58,13 @@ class ProfileController extends Controller
             return response()->json($credentials->errors(), 422);
         }
 
-        $user = $request->user();
-
-        $user->delete();
+        $request->user()->delete();
 
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json(['link'=> route('login.view')], 200);
+        return response()->json(['link' => route('login.view'), 'messages' => ['message' => [__('profile.messages.deleted_account')]], 'status' => 'deleted'], 200);
     }
 }

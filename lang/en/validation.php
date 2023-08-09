@@ -163,8 +163,8 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'confirmed' => [
+            'new_password' => 'The password field confirmation does not match.',
         ],
     ],
 

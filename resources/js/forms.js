@@ -3,6 +3,51 @@ class FormSubmitter {
     this.submitOK = true;
     this.forms = document.querySelectorAll('.form');
     this.formsController();
+    if (history.state){
+      this.messagesController();
+    }
+  }
+
+  messagesController (error = null){
+    let color = 'red';
+    let icon = 'close'
+    if (error == null){
+      error = history.state.messages;
+      if (history.state.status == 'done'){
+        color = 'green';
+        icon = 'checkmark';
+      } else if (history.state.status == 'what?'){
+        color = 'purple';
+        icon = 'help';
+      } else if (history.state.status == 'edited'){
+        color = 'orange';
+        icon = 'build';
+      } else {
+        color = 'red';
+        icon = 'trash';
+      } 
+    }
+
+    let messageBox = document.querySelector('.message-box');
+    let messageText = document.querySelector('.message-text');
+    let messageIcon = document.querySelector('.message-icon');
+    messageIcon.innerHTML = "";
+    let ionIcon = document.createElement('ion-icon');
+    ionIcon.setAttribute('name', icon);
+    messageIcon.appendChild(ionIcon);
+    messageText.innerHTML = "";
+    for(let [field, messages] of Object.entries(error)){
+      messages.map(message=>{
+        if (message != ''){
+          messageText.innerHTML += `<h3>${message}</h3>`;
+        }
+      });
+    }
+    messageBox.style.color = `var(--${color})`;
+    messageBox.style.borderColor = `var(--${color})`;
+    messageBox.style.backgroundColor = `var(--background-${color})`;
+    messageBox.style.animation = "5s ease-out 0s show";
+    setTimeout(()=> messageBox.style.animation = 'none', 6000);
   }
 
   formsController(){
@@ -94,7 +139,12 @@ class FormSubmitter {
 
         return res.json().then(data =>{ 
           if ("link" in data){
-            location.replace(data.link)
+            if (!("messages" in data)){
+              location.href(data.link);
+            } else {
+              history.pushState({messages: data.messages, status: data.status}, '', data.link);
+              history.go();
+            }
           }
 
           if ("notes" in data){
@@ -103,16 +153,7 @@ class FormSubmitter {
             document.getElementById('notes-square').style.display = "flex";
           }
         });
-      }).catch(err=>{
-        for(let [errorField, errorMessages] of Object.entries(err)){
-          document.querySelector(`.${errorField}Errors`).innerHTML = "";
-          errorMessages.map(errorMessage=>{
-            let smallField = document.createElement('small');
-            smallField.textContent = `*${errorMessage}`;
-            document.querySelector(`.${errorField}Errors`).appendChild(smallField);
-          });
-        }
-      });
+      }).catch(err=> this.messagesController(err));
   }
 }
 

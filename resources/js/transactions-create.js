@@ -1,7 +1,6 @@
 let quantityInput = document.getElementById('quantity-input');
 
 function quantityFieldSet() {
-  inputWidth = quantityInput.scrollWidth;
   quantityInput.style.width = "40px";
   quantityInput.style.width = quantityInput.scrollWidth + "px";
 }
@@ -14,8 +13,8 @@ let categories = document.querySelectorAll('.category-selector');
 
 function categoryTarget() {
   let data = types.value.split('|');
-  typeValue = data[0];
-  colorValue = data[1];
+  let typeValue = data[0];
+  let colorValue = data[1];
   document.querySelector('.transaction_span').style.backgroundColor = colorValue;
   document.querySelector('.transaction_submit').style.backgroundColor = colorValue;
 
@@ -30,7 +29,7 @@ function categoryTarget() {
       } else {
         category.style.display = "none";
         let Children = category.children;
-        for (categoryChild of Children) {
+        for (let categoryChild of Children) {
           categoryChild.removeAttribute('selected');
         }
       };

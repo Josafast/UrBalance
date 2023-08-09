@@ -13,15 +13,15 @@
     <div class="glide">
       <div class="glide__track" data-glide-el="track">
         <ul class="glide__slides">
-          <x-chart-js :transactions="$transactions" :type="'spend'" :sinceUntil="$sinceUntil"/>
-          <x-chart-js :transactions="$transactions" :type="'entrance'" :sinceUntil="$sinceUntil"/>
-          <x-chart-js :transactions="$transactions" :type="'saving'" :sinceUntil="$sinceUntil"/>
+          <x-chart-js :type="'spend'" :sinceUntil="$sinceUntil"/>
+          <x-chart-js :type="'entrance'" :sinceUntil="$sinceUntil"/>
+          <x-chart-js :type="'saving'" :sinceUntil="$sinceUntil"/>
         </ul>
       </div>
     </div>
   </section>
   <section class="dashboard-select-date">
-    <form action="{{ route('dashboard') }}" method="get" id="sinceUntil" class="form date_form">
+    <form action="{{ route('dashboard') }}" method="get" id="sinceUntil" class="form form_styles date_form">
       <label for="since">
         <h2>{{ __('query_fields.since') }}: </h2>
         <input type="date" name="since" id="dateSINCE" 

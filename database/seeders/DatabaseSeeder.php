@@ -76,10 +76,7 @@ class DatabaseSeeder extends Seeder
             'transaction_id' => 8
         ]);
 
-        $balanceUpdate = app()->make('App\Http\Controllers\BalanceController');
-        $balanceUpdate->store($balance_one);
-
-        $balanceUpdate = app()->make('App\Http\Controllers\BalanceController');
-        $balanceUpdate->store($balance_two);
+        app()->make('App\Http\Controllers\BalanceController')->store_all($balance_one);
+        app()->make('App\Http\Controllers\BalanceController')->store_all($balance_two);
     }
 }

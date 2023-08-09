@@ -9,12 +9,16 @@
 :root {
   --strong-red: #ff2d5a; 
   --red: #FF6384;
+  --background-red: rgb(252, 241, 241);
   --orange: #FF861D;
+  --background-orange: #fff7ef;
   --yellow: #FFCD56;
   --green: #00DC7C;
+  --background-green: rgb(247, 252, 241);
   --strong-blue: #1669ee; 
   --blue: #36A2EB;
   --purple: #A51DFF;
+  --background-purple: rgb(250, 241, 252);
   --pink: #ff2cb2;
 }
 
@@ -145,7 +149,62 @@
   }
 }
 
+.message-box {
+  z-index: 10000000000000;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  padding: 20px;
+  min-width: 210px;
+  max-width: calc(90vw - 40px);
+  border-left: 10px solid;
+  opacity: 0;
+
+  & .message-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.3em;
+    margin-right: 10px;
+  }
+
+  & .message-text {
+    display: flex;
+    flex-direction: column;
+
+    & h3 {
+      font-size: 1.2em;
+      font-weight: 400;
+      color: #000;
+    }
+  }
+}
+
+@keyframes show{
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 small {
+  width: 100%;
   color: #f00;
 }
 
@@ -636,8 +695,8 @@ body {
       }
     }
   
-    & form.form,
-    & div.form {
+    & form.form_styles,
+    & div.form_styles {
       color: #444;
       transition: 2s;
       width: max-content;
@@ -674,6 +733,10 @@ body {
           &:valid {
             border-color: #fff;
           }
+        }
+
+        & small {
+          color: #fff;
         }
       }
 
@@ -1218,7 +1281,7 @@ body {
       }
 
       & form {
-        &.form {
+        &.form_styles {
           &.transactions_form {
             margin: 0 auto;
             & div {
@@ -1354,7 +1417,7 @@ body {
   body {
     & main {
       & section {
-        & form.form.transactions_form {
+        & form.form_styles.transactions_form {
           justify-content: center;
         }
       }

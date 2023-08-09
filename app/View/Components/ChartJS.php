@@ -12,7 +12,7 @@ class ChartJS extends Component
 {
     public $type;
     public $labels;
-    public function __construct($transactions, string $type, array $sinceUntil)
+    public function __construct(string $type, array $sinceUntil)
     {
         $searchINT = $type == 'entrance' ? 1 : ($type == 'spend' ? 2 : 3);
         $queries = [
@@ -25,8 +25,7 @@ class ChartJS extends Component
         ]; 
         $this->type = __('transactions.types.'.$type);
 
-        $searchedTransactions = app()->make('App\Http\Controllers\TransactionController');
-        $searchedTransactions = $searchedTransactions->show($transactions, $queries);
+        $searchedTransactions = app()->make('App\Http\Controllers\TransactionController')->show($queries);
 
         $categories = Category::all();
 

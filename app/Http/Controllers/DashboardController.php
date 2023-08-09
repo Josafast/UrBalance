@@ -13,10 +13,7 @@ class DashboardController extends Controller
             request()->has('until') ? request()->input('until') : null 
         ];
 
-        $main = $request->session()->get('main');
-
-        $balanceFunc = app()->make('App\Http\Controllers\BalanceController');
-        $balanceValues = $balanceFunc->index($main);
+        $balanceValues = app()->make('App\Http\Controllers\BalanceController')->index();
 
         return view('dashboard', compact('balanceValues', 'sinceUntil'));
     }

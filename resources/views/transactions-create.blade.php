@@ -1,7 +1,10 @@
 <x-app-layout title="{{ isset($transaction) ? __('titles.transactions.modify') : __('titles.transactions.create') }}">
-  <form action="{{ isset($transaction) ? route('transactions.update', $transaction->id) : route('transactions.store') }}" method="POST" class="transaction_form">
+  <form action="{{ isset($transaction) ? route('transactions.updater') : route('transactions.store') }}" method="POST" class="form transaction_form">
     @csrf 
     @method( isset($transaction) ? 'PUT' : 'POST')
+    @if (isset($transaction))
+      <input type="hidden" name="id" value="{{ $transaction->id }}">
+    @endif
     <div style="display: grid; grid-gap: 0; grid-template-columns: 1fr max-content; grid-template-rows: min-content; height: min-content;">
       <label for="name">
         <input type="text" name="name" required placeholder="{{ __('transactions.fields.new_transaction') }}" 
@@ -67,7 +70,7 @@
         </select>
       </label>
       <label for="date">
-        <input type="date" name="date" required value="{{ isset($transaction) ? $transaction->date : date_format(new DateTime(), "Y-m-d") }}">
+        <input type="date" name="date" required value="{{ date_format(new DateTime(isset($transaction) ? $transaction->date : ''), "Y-m-d") }}">
       </label>
     </div>
     <div style="height: 100%; display: flex; flex-direction: column; flex-wrap: nowrap !important; margin-top: auto;">

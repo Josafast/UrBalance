@@ -2,150 +2,127 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use DateTime;
 use App\Models\Transaction;
+use App\Models\Type;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    public function index(Request $request)
+    protected function find(int $id)
     {
-        $main = $request->session()->get('main');
-        $request->session()->put('main', $main);
-
-        return view('transactions');
+        return Transaction::whereHas('balance', function ($query) {
+            $query->where('exchange_id', request()->session()->get('main'));
+        })->where('id', $id)->first();
     }
 
-    public function create()
+    protected function data_formater(Request $request)
     {
-        return view('transactions-create');
-    }
-
-    public function notes(Request $request){
-        $transaction = $this->find($request->id);
-        return response()->json(['notes' => parsedown($transaction->notes), 'name' => $transaction->name], 200);
-    }
-
-    public function store(Request $request)
-    {
-        $balanceDestiny = $request->user()->balance->where('exchange_id', $request->session()->get('main'))->first();
-        $balanceDestinyID = $balanceDestiny->id;
-
         $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id', 'date']);
-        
+
         $data['quantity'] = floatval($data['quantity']);
         $data['quantity'] *= 100;
         $data['quantity'] = intval($data['quantity']);
         $data['date'] = new DateTime($data['date']);
 
-        $transaction = Transaction::create($data);
-
-        DB::table('balance_transaction')->insert([
-            'balance_id' => $balanceDestinyID,
-            'transaction_id' => $transaction->id
-        ]);
-
-        $balanceUpdateValues = app()->make('App\Http\Controllers\BalanceController');
-        $balanceUpdateValues->store($balanceDestiny);
-
-        return redirect()->route('dashboard');
+        return $data;
     }
-    
-    public function show($transactions, $queries)
+
+    public function notes(Request $request)
     {
-        if (count($queries) >= 1){
-            if ($queries['type'] != '') {
-                $type = $queries['type'];
-                $transactions = $transactions->filter(function ($transaction) use ($type) {
-                    return $transaction->category->type_id == intval($type);
-                });
-            }
+        $transaction = $this->find($request->id);
+        return response()->json(['notes' => parsedown($transaction->notes), 'name' => $transaction->name], 200);
+    }
 
-            if ($queries['state'] != ''){
-                $state = $queries['state'];
-                $transactions = $transactions->filter(function ($transaction) use ($state) {
-                    return var_export($transaction->status, true) == $state;
-                });
-            }
+    public function index(Request $request){
+        return view('transactions');
+    }
 
-            if ($queries['base'] != '' || $queries['limit'] != ''){
-                $baseLimit = [
-                    $queries['base'] == null ? '0' : $queries['base']*100,
-                    $queries['limit'] == null ? '100000000000000000000000' : $queries['limit']*100
-                ];
-                $transactions = $transactions->filter(function ($transaction) use ($baseLimit) {
-                    return $transaction->quantity >= $baseLimit[0] && $transaction->quantity <= $baseLimit[1];
-                });
-            }
-    
-            if ($queries['since'] != '' || $queries['until'] != ''){
-                $sinceUntil = [
-                    $queries['since'] == null ? date_modify(new DateTime(), '-10 days') : new DateTime($queries['since']),
-                    $queries['until'] == null ? new DateTime() : date_modify(new DateTime($queries['until']), '+1 day')
-                ];
-                $transactions = $transactions->filter(function ($transaction) use ($sinceUntil) {
-                    return new DateTime($transaction->date) >= $sinceUntil[0] && new DateTime($transaction->date) <= $sinceUntil[1];
-                });
+    public function create(Request $request){
+        return view('transactions-create');
+    }
+
+    public function store(Request $request)
+    {
+        if (Category::find($request->category_id)->type->id == 2){
+            $balance = $request->user()->balance->where('exchange_id', $request->session()->get('main'))->first();
+            $validSpendFields = $request->category_id == '12' ?
+            intval($balance->savgin) :
+            intval($balance->balance);
+            if (intval($request->quantity)*100 > $validSpendFields){
+                return response()->json(['error' => [__('transactions.messages.not_more_than_having')]], 422);
             }
         }
-        return $transactions;
+
+        Transaction::create($this->data_formater($request));
+
+        return response()->json(['link' => route('transactions.index'), 'messages' => ['message' => [__('transactions.messages.created')]], 'status' => 'done'], 200);
     }
 
-    protected function find(int $id){
-        $balances = request()->user()->balance;
-        $balanceID = $balances->where('exchange_id', request()->session()->get('main'))->first()->id; 
-        $transaction = Transaction::whereHas('balance', function($query) use ($balanceID){
-            $query->where('id', $balanceID);
-        })->where('id', $id)->first();
+    public function show($queries)
+    {
+        $transactions = request()->user()->balance
+                                 ->where('exchange_id', request()->session()->get('main'))
+                                 ->first()->transactions;
 
-        return $transaction;
+        return $transactions->when(count($queries) >= 1, function ($collection) use ($queries){
+            return $collection
+                ->when($queries['type'] != '', 
+                    function ($subcollection) use ($queries){
+                        return $subcollection->whereIn('category_id', Type::find($queries['type'])->categories->pluck('id'));
+                    })
+                ->when($queries['state'] != '', 
+                    function ($subcollection) use ($queries){
+                        return $subcollection->where('status', boolval($queries['state']));
+                    })
+                ->when($queries['base'] != '' || $queries['limit'] != '', 
+                    function($subcollection) use ($queries){
+                        $baseLimit = [
+                            $queries['base'] == null ? '0' : $queries['base']*100,
+                            $queries['limit'] == null ? '100000000000000000000000' : $queries['limit']*100
+                        ];
+                        return $subcollection->whereBetween('quantity', $baseLimit);
+                    })
+                ->when($queries['since'] != '' || $queries['until'] != '', 
+                    function($subcollection) use ($queries){
+                        $sinceUntil = [
+                            $queries['since'] == null ? date_format(date_modify(new DateTime(), '-10 days'), 'Y-m-d H:i:s') : date_format(new DateTime($queries['since']), 'Y-m-d H:i:s'),
+                            $queries['until'] == null ? date_format(new DateTime(), 'Y-m-d H:i:s') : date_format(date_modify(new DateTime($queries['until']), '+1 days'), 'Y-m-d H:i:s')
+                        ];
+                        return $subcollection->where('date', ">=", $sinceUntil[0])->where('date', "<=", $sinceUntil[1]);
+                });
+        });
     }
 
     public function edit(int $id)
     {
         $transaction = $this->find($id);
 
-        if ($transaction){
+        if ($transaction) {
             return view('transactions-create', compact('transaction'));
-        } 
+        }
 
         return redirect(request()->session()->get('_previous')['url']);
     }
 
     public function update(Request $request)
     {
-        $transaction = $this->find($request->transaction);
-        if ($transaction){
-            $data = $request->only(['name', 'quantity', 'status', 'notes', 'category_id', 'date']);
+        $transaction = $this->find($request->id); 
 
-            $data['quantity'] = floatval($data['quantity']);
-            $data['quantity'] *= 100;
-            $data['quantity'] = intval($data['quantity']);
-            $data['date'] = new DateTime($data['date']);
+        $transaction->update($this->data_formater($request));
 
-            $transaction->update($data);
-            
-            $balanceUpdateValues = app()->make('App\Http\Controllers\BalanceController');
-            $balanceUpdateValues->store($transaction->balance->first());
-
-            return redirect()->route('transactions.index');
-        }
-
-        return redirect(request()->session()->get('_previous')['url']);
+        return response()->json(['link' => route('transactions.index'), 'messages' => ['message' => [__('transactions.messages.modified')]], 'status' => 'edited'], 200);
     }
 
     public function destroy(int $id)
     {
         $transaction = $this->find($id);
-        if ($transaction){
-            $balance = $transaction->balance->first();
+        if ($transaction) {
             $transaction->delete();
+            return response()->json(['link' => route('transactions.index'), 'messages' => ['message' => [__('transactions.messages.deleted')]], 'status' => 'deleted'], 200);
+        }
 
-            $balanceUpdateValues = app()->make('App\Http\Controllers\BalanceController');
-            $balanceUpdateValues->store($balance);
-        } 
-
-        return redirect()->route('transactions.index');
+        return response()->json(['link' => route('transactions.index'), 'messages' => ['message' => [__('transactions.messages.not_found')]], 'status' => 'what?'], 200);
     }
 }
