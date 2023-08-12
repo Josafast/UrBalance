@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use DateTime;
 use App\Models\Transaction;
-use App\Models\Type;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -13,7 +12,7 @@ class TransactionController extends Controller
     protected function find(int $id)
     {
         return Transaction::whereHas('balance', function ($query) {
-            $query->where('exchange_id', request()->session()->get('main'));
+            $query->where('exchange_id', session()->get('main'));
         })->where('id', $id)->first();
     }
 
@@ -31,7 +30,7 @@ class TransactionController extends Controller
 
     public function notes(Request $request)
     {
-        $transaction = $this->find($request->id);
+        $transaction = Transaction::find($request->id);
         return response()->json(['notes' => parsedown($transaction->notes), 'name' => $transaction->name], 200);
     }
 
@@ -63,14 +62,14 @@ class TransactionController extends Controller
     public function show($queries)
     {
         $transactions = request()->user()->balance
-                                 ->where('exchange_id', request()->session()->get('main'))
-                                 ->first()->transactions;
+                                 ->where('exchange_id', session()->get('main'))
+                                 ->first()->transactions->load('category.type');
 
         return $transactions->when(count($queries) >= 1, function ($collection) use ($queries){
             return $collection
                 ->when($queries['type'] != '', 
                     function ($subcollection) use ($queries){
-                        return $subcollection->whereIn('category_id', Type::find($queries['type'])->categories->pluck('id'));
+                        return $subcollection->where('category.type_id', $queries['type']);
                     })
                 ->when($queries['state'] != '', 
                     function ($subcollection) use ($queries){
@@ -100,10 +99,11 @@ class TransactionController extends Controller
         $transaction = $this->find($id);
 
         if ($transaction) {
+            $transaction = $transaction->load('category');
             return view('transactions-create', compact('transaction'));
         }
 
-        return redirect(request()->session()->get('_previous')['url']);
+        return redirect()->route('transactions.index');
     }
 
     public function update(Request $request)

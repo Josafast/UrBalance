@@ -7,31 +7,26 @@ use Illuminate\Http\Request;
 
 class BalanceController extends Controller
 {
-    public function index()
+    public function index($balance)
     {
-        $balance = request()->user()->balance
-                            ->where('exchange_id', request()->session()->get('main'))
-                            ->first();
-
         $sign = $balance->exchange->sign;
 
-        $notDone = $balance->transactions->where('status','<>','false');
-        $toDo = array(floatval(0),floatval(0));
-        foreach($notDone as $nd):
-            if ($nd->category->type->id == 2):
-                $toDo[0] = $toDo[0] + floatval($nd->quantity/100);
-            endif;
-
-            if ($nd->category->type->id == 1){
-                $toDo[1] = $toDo[1] + floatval($nd->quantity/100);
+        $notDone = $balance->transactions->reduce(function ($previous, $transaction) {
+            if (!boolval($transaction->status)){
+                if ($transaction->category->type_id == 2) {
+                    $previous[0] += floatval($transaction->quantity / 100);
+                } elseif ($transaction->cateogry->type_id == 1) {
+                    $previous[1] += floatval($transaction->quantity / 100);
+                }
             }
-        endforeach;
+            return $previous;
+        }, [0, 0]);
 
         $balanceValues = array(
             'total'=>number_format($balance->balance/100, 2).$sign,
             'savings'=>number_format($balance->saving/100, 2).$sign,
-            'debts'=>number_format($toDo[0],2).$sign,
-            'charges'=>number_format($toDo[1],2).$sign
+            'debts'=>number_format($notDone[0],2).$sign,
+            'charges'=>number_format($notDone[1],2).$sign
         );
 
         return $balanceValues;
@@ -55,7 +50,7 @@ class BalanceController extends Controller
         ]);
 
         if (auth()->check()){
-            $request->session()->put('main',$request->exchange_id);
+            session()->put('main',$request->exchange_id);
             return response()->json(['link' => request()->session()->get('_previous')['url'], 'messages' => ['message' => [__('balance.messages.created')]], 'status' => 'done'], 200);
         }
     }
@@ -116,7 +111,7 @@ class BalanceController extends Controller
 		             ->first()->update(['main' => true]);
         }
 
-        $request->session()->put('main', $request->main);
+        session()->put('main', $request->main);
 
         return response()->json(['link' => request()->session()->get('_previous')['url'], 'messages' => ['message' => [$request->boolean('change_main') ? __('balance.messages.main_modified') : __('balance.messages.current_changed')]], 'status' => 'edited'], 200);   
     }
@@ -125,7 +120,7 @@ class BalanceController extends Controller
     {
         $balances = $request->user()->balance;
         $realMainbalance = $balances->where('main', true)->first();
-        $mainOption = $request->session()->get('main');
+        $mainOption = session()->get('main');
         $currentBalance = '';
 
         $balances->when($realMainbalance->exchange_id == $request->main, function ($query) use ($request, $mainOption, &$realMainbalance, &$currentBalance){
@@ -144,6 +139,6 @@ class BalanceController extends Controller
 
         $currentBalance->delete();
 
-        return response()->json(['link' => request()->session()->get('_previous')['url'], 'messages' => ['message' => [__('balance.messages.deleted')]], 'status' => 'deleted'], 200);
+        return response()->json(['link' => session()->get('_previous')['url'], 'messages' => ['message' => [__('balance.messages.deleted')]], 'status' => 'deleted'], 200);
     }
 }

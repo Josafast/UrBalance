@@ -10,11 +10,11 @@
       <input type="hidden" name="change_main" id="change_main" value="false">
     </label>
     <label for="main" style="margin: 0;">
-      <input type="hidden" name="main" id="main-id"value="{{ request()->session()->get('main') }}">
+      <input type="hidden" name="main" id="main-id"value="{{ session()->get('main') }}">
     </label>
     <ul>
       @php
-        $balances = request()->user()->balance;
+        $balances = request()->user()->balance->load('exchange');
       @endphp
       @foreach ($balances as $position => $balance)
         <li style="margin-top: -1.5px; 
@@ -23,11 +23,11 @@
           font-weight: 500;
         @endif"
         class="list-element
-        @if ($balance->exchange_id == request()->session()->get('main'))
+        @if ($balance->exchange_id == session()->get('main'))
             selected
         @endif" id="{{ $balance->exchange_id }}">
           {{ __('exchange.'.strtolower($balance->exchange->name)) }}
-          @if ($balance->exchange_id == request()->session()->get('main'))
+          @if ($balance->exchange_id == session()->get('main'))
             ({{ __('exchange.current') }})
           @endif
         </li>

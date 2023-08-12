@@ -14,16 +14,12 @@
       </label>
       <label for="quantity">
         <span class="transaction_span">
-          <input type="number" step="0.01" min="0.01" name="quantity" id="quantity-input" value="{{ isset($transaction) ? number_format($transaction->quantity/100, 2) : '0.00' }}" class="number" style="height: min-content">&nbsp;{{ App\Models\Exchange::where('id', request()->session()->get('main'))->first()->sign }}
+          <input type="number" step="0.01" min="0.01" name="quantity" id="quantity-input" value="{{ isset($transaction) ? number_format($transaction->quantity/100, 2, ".", "") : '0.00' }}" class="number" style="height: min-content">&nbsp;{{ App\Models\Exchange::where('id', session()->get('main'))->first()->sign }}
         </span>
       </label>
     </div>
     <div style="padding: 5px 0; display: flex; gap: 10px; height: min-content" class="transaction_options">
-        @php
-
-        $types = App\Models\Type::all();
-
-        @endphp
+        @php $types = App\Models\Type::all()->load('categories'); @endphp
         <select style="width: min-content" class="type-selector">
           <option value="|#333">{{ __('transactions.table.type') }}</option>
           @foreach($types as $type)

@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Providers;
+
+use App\Models\Balance;
 use App\Models\Transaction;
+use App\Observers\BalanceObserver;
 use App\Observers\TransactionObserver;
 
 use Illuminate\Support\ServiceProvider;
@@ -22,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Transaction::observe(TransactionObserver::class);
+        Balance::observe(BalanceObserver::class);
     }
 }

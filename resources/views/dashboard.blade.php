@@ -7,15 +7,13 @@
       const rootStyles = getComputedStyle(document.documentElement);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" stye="display:none;"></script>
-    @php
-      $transactions = request()->user()->balance->where('exchange_id', request()->session()->get('main'))->first()->transactions;
-    @endphp
     <div class="glide">
       <div class="glide__track" data-glide-el="track">
         <ul class="glide__slides">
-          <x-chart-js :type="'spend'" :sinceUntil="$sinceUntil"/>
-          <x-chart-js :type="'entrance'" :sinceUntil="$sinceUntil"/>
-          <x-chart-js :type="'saving'" :sinceUntil="$sinceUntil"/>
+          @php $categories = App\Models\Category::all()->groupBy('type_id'); @endphp
+          @foreach($balance as $typeID => $transactions)
+            <x-chart-js :transactions="$transactions" :category="$categories[$typeID]" :sinceUntil="$sinceUntil"/>
+          @endforeach
         </ul>
       </div>
     </div>

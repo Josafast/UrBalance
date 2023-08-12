@@ -8,48 +8,6 @@ class FormSubmitter {
     }
   }
 
-  messagesController (error = null){
-    let color = 'red';
-    let icon = 'close'
-    if (error == null){
-      error = history.state.messages;
-      if (history.state.status == 'done'){
-        color = 'green';
-        icon = 'checkmark';
-      } else if (history.state.status == 'what?'){
-        color = 'purple';
-        icon = 'help';
-      } else if (history.state.status == 'edited'){
-        color = 'orange';
-        icon = 'build';
-      } else {
-        color = 'red';
-        icon = 'trash';
-      } 
-    }
-
-    let messageBox = document.querySelector('.message-box');
-    let messageText = document.querySelector('.message-text');
-    let messageIcon = document.querySelector('.message-icon');
-    messageIcon.innerHTML = "";
-    let ionIcon = document.createElement('ion-icon');
-    ionIcon.setAttribute('name', icon);
-    messageIcon.appendChild(ionIcon);
-    messageText.innerHTML = "";
-    for(let [field, messages] of Object.entries(error)){
-      messages.map(message=>{
-        if (message != ''){
-          messageText.innerHTML += `<h3>${message}</h3>`;
-        }
-      });
-    }
-    messageBox.style.color = `var(--${color})`;
-    messageBox.style.borderColor = `var(--${color})`;
-    messageBox.style.backgroundColor = `var(--background-${color})`;
-    messageBox.style.animation = "5s ease-out 0s show";
-    setTimeout(()=> messageBox.style.animation = 'none', 6000);
-  }
-
   formsController(){
     for (const form of this.forms) {
       form.addEventListener('submit', (e) => {
@@ -132,28 +90,67 @@ class FormSubmitter {
       };
 
       fetch(this.action, options)
-      .then(res=>{
-        if (!res.ok){
-          return res.json().then(error => { throw error; });
+      .then(res=>res.json())
+      .then(res => {
+        if ("link" in res){
+          if ("messages" in res){
+            history.pushState({messages: res.messages, status: res.status}, '', res.link);
+            history.go();
+            return;
+          }
+
+          location.replace(res.link);
         }
 
-        return res.json().then(data =>{ 
-          if ("link" in data){
-            if (!("messages" in data)){
-              location.href(data.link);
-            } else {
-              history.pushState({messages: data.messages, status: data.status}, '', data.link);
-              history.go();
-            }
-          }
-
-          if ("notes" in data){
-            document.querySelector('.notes-text').innerHTML = data.notes;
-            document.querySelector('.notes-title').children[0].innerHTML = data.name;
-            document.getElementById('notes-square').style.display = "flex";
-          }
-        });
+        if ("notes" in res){
+          document.querySelector('.notes-text').innerHTML = res.notes;
+          document.querySelector('.notes-title').children[0].innerHTML = res.name;
+          document.getElementById('notes-square').style.display = "flex";
+        }
       }).catch(err=> this.messagesController(err));
+  }
+
+  messagesController (error = null){
+    console.log(error);
+    let color = 'red';
+    let icon = 'close'
+    if (error == null){
+      error = history.state.messages;
+      if (history.state.status == 'done'){
+        color = 'green';
+        icon = 'checkmark';
+      } else if (history.state.status == 'what?'){
+        color = 'purple';
+        icon = 'help';
+      } else if (history.state.status == 'edited'){
+        color = 'orange';
+        icon = 'build';
+      } else {
+        color = 'red';
+        icon = 'trash';
+      } 
+    }
+
+    let messageBox = document.querySelector('.message-box');
+    let messageText = document.querySelector('.message-text');
+    let messageIcon = document.querySelector('.message-icon');
+    messageIcon.innerHTML = "";
+    let ionIcon = document.createElement('ion-icon');
+    ionIcon.setAttribute('name', icon);
+    messageIcon.appendChild(ionIcon);
+    messageText.innerHTML = "";
+    for(let [field, messages] of Object.entries(error)){
+      messages.map(message=>{
+        if (message != ''){
+          messageText.innerHTML += `<h3>${message}</h3>`;
+        }
+      });
+    }
+    messageBox.style.color = `var(--${color})`;
+    messageBox.style.borderColor = `var(--${color})`;
+    messageBox.style.backgroundColor = `var(--background-${color})`;
+    messageBox.style.animation = "5s ease-out 0s show";
+    setTimeout(()=> messageBox.style.animation = 'none', 6000);
   }
 }
 

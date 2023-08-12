@@ -14,7 +14,7 @@ class TransactionObserver
     public function created(Transaction $transaction): void
     {
         if (request()->session()->has('main')){
-            $balance = request()->user()->balance->where('exchange_id', request()->session()->get('main'))->first();
+            $balance = request()->user()->balance->where('exchange_id', session()->get('main'))->first();
             DB::table('balance_transaction')->insert([
                 'balance_id' => $balance->id,
                 'transaction_id' => $transaction->id

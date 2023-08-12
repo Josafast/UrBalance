@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Category;
+use App\Models\Type;
 use Closure;
 use DateTime;
 use Illuminate\Contracts\View\View;
@@ -12,29 +13,9 @@ class ChartJS extends Component
 {
     public $type;
     public $labels;
-    public function __construct(string $type, array $sinceUntil)
+    public function __construct($transactions, $category, array $sinceUntil)
     {
-        $searchINT = $type == 'entrance' ? 1 : ($type == 'spend' ? 2 : 3);
-        $queries = [
-            'type' => $searchINT,
-            'state' => 'true',
-            'base' => '',
-            'limit' => '',
-            'since' => $sinceUntil[0],
-            'until' => $sinceUntil[1]
-        ]; 
-        $this->type = __('transactions.types.'.$type);
-
-        $searchedTransactions = app()->make('App\Http\Controllers\TransactionController')->show($queries);
-
-        $categories = Category::all();
-
-        $categories = $categories->reduce(function ($result, $category) use ($searchINT){
-            if ($category->type->id == $searchINT){
-                $result[] = $category;
-            }
-            return $result;
-        }, []);
+        $this->type = __('transactions.types.'.($category[0]->type_id == 1 ? 'entrance' : ($category[0]->type_id == 2 ? 'spend' : 'saving')));
 
         $labels = array(
             'name' => array(),
@@ -44,13 +25,13 @@ class ChartJS extends Component
             )
         );
 
-        foreach($categories as $category){
-            $labels['name'][] = $category->name;
+        foreach($category as $categoryElement){
+            $labels['name'][] = $categoryElement->name;
             $labels['data']['transactions'][] = 0;
-            $labels['data']['color'][] = $category->color;
+            $labels['data']['color'][] = $categoryElement->color;
         }
 
-        foreach($searchedTransactions as $transaction){
+        foreach($transactions as $transaction){
             for($i=0; $i<count($labels['name']); $i++){
                 if ($labels['name'][$i] == $transaction->category->name){
                     $labels['data']['transactions'][$i] = $labels['data']['transactions'][$i] + intval($transaction->quantity);

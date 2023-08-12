@@ -13,8 +13,14 @@ class DashboardController extends Controller
             request()->has('until') ? request()->input('until') : null 
         ];
 
-        $balanceValues = app()->make('App\Http\Controllers\BalanceController')->index();
+        $balance = request()->user()->balance
+        ->where('exchange_id', session()->get('main'))->first()
+        ->load('transactions.category', 'exchange'); 
 
-        return view('dashboard', compact('balanceValues', 'sinceUntil'));
+        $balanceValues = app()->make('App\Http\Controllers\BalanceController')->index($balance);
+
+        $balance = $balance->transactions->where('status', true)->groupBy('category.type_id');
+
+        return view('dashboard', compact('balance', 'balanceValues', 'sinceUntil'));
     }
 }
