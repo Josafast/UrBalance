@@ -36,7 +36,7 @@ class FormSubmitter {
     this.formData = params;
 
     this.method = this.formData.has('_method') ? this.formData.get('_method') : formulary.method;
-  
+
     if (this.method.toUpperCase() == 'GET'){
       let path = new URL(window.location);
       let pathname = "";
@@ -46,7 +46,7 @@ class FormSubmitter {
       path.search = pathname.slice(0, pathname.length-1);
       location.replace(path.href);
     }
-  } 
+  }
 
   balanceMenuSelector(buttonValue){
     let path = new URL(window.location.href);
@@ -58,7 +58,7 @@ class FormSubmitter {
     if (buttonValue == "4"){
       path.pathname = "/balance/delete";
       this.action = path.href;
-      this.method = 'delete';  
+      this.method = 'delete';
     }
 
     this.submitOK = true;
@@ -70,12 +70,12 @@ class FormSubmitter {
       this.submitOK = false;
       return;
     }
-    
+
     let registerData = new FormData(document.querySelector('.login_form'));
     for (let [labelName, labelValue] of registerData.entries()){
       if (labelName != '_token') this.formData.append(labelName, labelValue);
     }
-  
+
     this.action = document.querySelector('.login_form').action;
     this.submitOK = true;
   }
@@ -90,8 +90,13 @@ class FormSubmitter {
       };
 
       fetch(this.action, options)
-      .then(res=>res.json())
-      .then(res => {
+      .then(async res=>{
+        if (res.status == 422){
+            return res.json().then(error => { throw error; });
+        }
+
+        return res.json();
+      }).then(res => {
         if ("link" in res){
           if ("messages" in res){
             history.pushState({messages: res.messages, status: res.status}, '', res.link);
@@ -128,7 +133,7 @@ class FormSubmitter {
       } else {
         color = 'red';
         icon = 'trash';
-      } 
+      }
     }
 
     let messageBox = document.querySelector('.message-box');

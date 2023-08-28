@@ -12,7 +12,7 @@
         <ul class="glide__slides">
           @php $categories = App\Models\Category::all()->groupBy('type_id'); @endphp
           @foreach($balance as $typeID => $transactions)
-            <x-chart-js :transactions="$transactions" :category="$categories[$typeID]" :sinceUntil="$sinceUntil"/>
+            <x-chart--j-s :transactions="$transactions" :category="$categories[$typeID]" :sinceUntil="$sinceUntil"/>
           @endforeach
         </ul>
       </div>
@@ -22,7 +22,7 @@
     <form action="{{ route('dashboard') }}" method="get" id="sinceUntil" class="form form_styles date_form">
       <label for="since">
         <h2>{{ __('query_fields.since') }}: </h2>
-        <input type="date" name="since" id="dateSINCE" 
+        <input type="date" name="since" id="dateSINCE"
         @if (request()->has('since'))
           value = "{{ old('since') ? old('since') : request()->input('since') }}"
         @endif>

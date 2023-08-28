@@ -23,7 +23,7 @@
                 <form action="{{ route('transactions.notes') }}" class="form" style="padding: 0; background-color: transparent; border-radius: none; width: min-content; height: min-content; width: min-content;" method="POST">
                     @csrf
                     <label for="id" style="width: 0;">
-                        <input type="hidden" name="transaction" value="{{ $transaction->id }}">
+                        <input type="hidden" name="id" value="{{ $transaction->id }}">
                     </label>
                     <input type="submit" value="👁️" style="border: none; font-size: 1.1em; cursor: pointer; margin: -30px 0 0; position: relative; top: 0; left: 0; background-color: transparent; border-radius: none; padding: 0px;">
                 </form>

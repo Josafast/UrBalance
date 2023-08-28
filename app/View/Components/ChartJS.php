@@ -2,10 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\Category;
-use App\Models\Type;
 use Closure;
-use DateTime;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
@@ -13,7 +10,7 @@ class ChartJS extends Component
 {
     public $type;
     public $labels;
-    public function __construct($transactions, $category, array $sinceUntil)
+    public function __construct($transactions, $category)
     {
         $this->type = __('transactions.types.'.($category[0]->type_id == 1 ? 'entrance' : ($category[0]->type_id == 2 ? 'spend' : 'saving')));
 
@@ -44,6 +41,6 @@ class ChartJS extends Component
 
     public function render(): View|Closure|string
     {
-        return view('components.chartjs');
+        return view('components.chart-js');
     }
 }

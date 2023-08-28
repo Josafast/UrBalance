@@ -23,7 +23,7 @@
     @auth
       <x-balance-menu />
     @endauth
-    @if (auth()->check())
+    @if (auth()->check() || request()->routeIs('register.view'))
       <x-balance-create />
     @endif
   </main>

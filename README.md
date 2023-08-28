@@ -1,0 +1,45 @@
+# Versions
+    - ## 0.1
+        - Starting project
+    - ## 0.2
+        - Register created
+        - Login created
+        - User Settings created
+    - ## 0.3
+        - Dashboard page created (Charts and filters)
+        - Transactions page created (filters)
+        - Main Balance setter created
+    - ## 0.4
+        - Balance change and remover created.
+        - Transaction creator (modifier and remover)
+        - Landing page created
+    - ## 0.5
+        - Formularies system updated
+    - ## 0.5.1
+        - Formularies system updated
+        - ToCents money usage installed
+    - ## 0.6
+        - Language settings
+        - ToCents money usage fixed
+    - ## 0.7
+        - Responsive styles added
+            1. Glide fixed
+            2. Header update
+            3. Notes viewer added
+        - New transactions category: Savings (spend)
+        - Transactions "Date" field added
+        - Upgraded components
+    - ## 0.8
+        - Message Box created
+        - Messages updated
+        - inline Balance updater added
+        - Some N+1 fixes
+        - Markdown Notes added
+        - Controllers optimized
+        - ValidationController created
+        - Language messages added
+    - ## 0.9
+        - N+1 problems solved (most)
+    - ## 1.0
+        - Production mode ended
+        - README.md updated
